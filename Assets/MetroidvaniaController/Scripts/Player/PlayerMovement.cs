@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour
+{
 
 	public CharacterController2D controller;
 	public Animator animator;
@@ -11,12 +12,14 @@ public class PlayerMovement : MonoBehaviour {
 
 	float horizontalMove = 0f;
 	bool jump = false;
+	bool jumping = false;
 	bool dash = false;
 
 	//bool dashAxis = false;
-	
+
 	// Update is called once per frame
-	void Update () {
+	void Update()
+	{
 
 		horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
 
@@ -25,6 +28,11 @@ public class PlayerMovement : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Z))
 		{
 			jump = true;
+		}
+
+		if (Input.GetKey(KeyCode.Z))
+		{
+			jumping = true;
 		}
 
 		if (Input.GetKeyDown(KeyCode.C))
@@ -58,11 +66,12 @@ public class PlayerMovement : MonoBehaviour {
 		animator.SetBool("IsJumping", false);
 	}
 
-	void FixedUpdate ()
+	void FixedUpdate()
 	{
 		// Move our character
-		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, dash);
+		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, jumping, dash);
 		jump = false;
 		dash = false;
+		jumping = false;
 	}
 }

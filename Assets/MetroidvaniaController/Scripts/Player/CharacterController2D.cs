@@ -5,12 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class CharacterController2D : MonoBehaviour
 {
-	[SerializeField] private float m_JumpForce = 400f;							// Amount of force added when the player jumps.
-	[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
-	[SerializeField] private bool m_AirControl = false;							// Whether or not a player can steer while jumping;
-	[SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
-	[SerializeField] private Transform m_GroundCheck;							// A position marking where to check if the player is grounded.
-	[SerializeField] private Transform m_WallCheck;								//Posicion que controla si el personaje toca una pared
+	[SerializeField] private float m_MaxJumpForce = 400f;                       // Amount of force added while the player is in the air
+	[SerializeField] private float m_ImpulseJumpForce = 400f;                   // Amount of force added when the player jumps.
+	[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;  // How much to smooth out the movement
+	[SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
+	[SerializeField] private LayerMask m_WhatIsGround;                          // A mask determining what is ground to the character
+	[SerializeField] private Transform m_GroundCheck;                           // A position marking where to check if the player is grounded.
+	[SerializeField] private Transform m_WallCheck;                             //Posicion que controla si el personaje toca una pared
 
 	const float k_GroundedRadius = .15f; // Radius of the overlap circle to determine if grounded
 	private bool m_Grounded;            // Whether or not the player is grounded.
@@ -18,6 +19,9 @@ public class CharacterController2D : MonoBehaviour
 	private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 	private Vector3 velocity = Vector3.zero;
 	private float limitFallSpeed = 25f; // Limit fall speed
+	private float m_FloatForce; // The amount of force applied based on how long player has been in air.
+	private float m_JumpTime; // The amount of time the player has been in the air.
+	public float AirTime = 1; // The amount of time the jump can continue to gain force (in seconds).
 
 	public bool canDoubleJump = true; //If player can double jump
 	[SerializeField] private float m_DashForce = 25f;
@@ -25,9 +29,10 @@ public class CharacterController2D : MonoBehaviour
 	private bool isDashing = false; //If player is dashing
 	private bool m_IsWall = false; //If there is a wall in front of the player
 	private bool isWallSliding = false; //If player is sliding in a wall
-	private bool oldWallSlidding = false; //If player is sliding in a wall in the previous frame
+	private bool oldWallSliding = false; //If player is sliding in a wall in the previous frame
 	private float prevVelocityX = 0f;
 	private bool canCheck = false; //For check if player is wallsliding
+	private bool jumpCanceled = false;
 
 	public float life = 10f; //Life of the player
 	public bool invincible = false; //If player can die
@@ -75,15 +80,15 @@ public class CharacterController2D : MonoBehaviour
 		{
 			if (colliders[i].gameObject != gameObject)
 				m_Grounded = true;
-				if (!wasGrounded )
-				{
-					OnLandEvent.Invoke();
-					if (!m_IsWall && !isDashing) 
-						particleJumpDown.Play();
-					canDoubleJump = true;
-					if (m_Rigidbody2D.velocity.y < 0f)
-						limitVelOnWallJump = false;
-				}
+			if (!wasGrounded)
+			{
+				OnLandEvent.Invoke();
+				if (!m_IsWall && !isDashing)
+					particleJumpDown.Play();
+				canDoubleJump = true;
+				if (m_Rigidbody2D.velocity.y < 0f)
+					limitVelOnWallJump = false;
+			}
 		}
 
 		m_IsWall = false;
@@ -108,21 +113,21 @@ public class CharacterController2D : MonoBehaviour
 			if (m_Rigidbody2D.velocity.y < -0.5f)
 				limitVelOnWallJump = false;
 			jumpWallDistX = (jumpWallStartX - transform.position.x) * transform.localScale.x;
-			if (jumpWallDistX < -0.5f && jumpWallDistX > -1f) 
+			if (jumpWallDistX < -0.5f && jumpWallDistX > -1f)
 			{
 				canMove = true;
 			}
-			else if (jumpWallDistX < -1f && jumpWallDistX >= -2f) 
+			else if (jumpWallDistX < -1f && jumpWallDistX >= -2f)
 			{
 				canMove = true;
 				m_Rigidbody2D.velocity = new Vector2(10f * transform.localScale.x, m_Rigidbody2D.velocity.y);
 			}
-			else if (jumpWallDistX < -2f) 
+			else if (jumpWallDistX < -2f)
 			{
 				limitVelOnWallJump = false;
 				m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
 			}
-			else if (jumpWallDistX > 0) 
+			else if (jumpWallDistX > 0)
 			{
 				limitVelOnWallJump = false;
 				m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
@@ -131,125 +136,151 @@ public class CharacterController2D : MonoBehaviour
 	}
 
 
-	public void Move(float move, bool jump, bool dash)
+	public void Move(float move, bool jump, bool jumping, bool dash)
 	{
-		if (canMove) {
-			if (dash && canDash && !isWallSliding)
-			{
-				//m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_DashForce, 0f));
-				StartCoroutine(DashCooldown());
-			}
-			// If crouching, check to see if the character can stand up
-			if (isDashing)
-			{
-				m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * -m_DashForce, 0);
-			}
-			//only control the player if grounded or airControl is turned on
-			else if (m_Grounded || m_AirControl)
-			{
-				if (m_Rigidbody2D.velocity.y < -limitFallSpeed)
-					m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, -limitFallSpeed);
-				// Move the character by finding the target velocity
-				Vector3 targetVelocity = new Vector2(move * 10f, m_Rigidbody2D.velocity.y);
-				// And then smoothing it out and applying it to the character
-				m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref velocity, m_MovementSmoothing);
+		if (!canMove) return;
 
-				// If the input is moving the player right and the player is facing left...
-				if (move > 0 && !m_FacingRight && !isWallSliding)
+		if (m_Grounded || isWallSliding)
+		{
+			m_FloatForce = m_MaxJumpForce;
+			jumpCanceled = false;
+		}
+		else
+		{
+			if (!jumping) jumpCanceled = true;
+			if (!jumpCanceled) m_JumpTime += Time.deltaTime;
+			else m_JumpTime = AirTime;
+			m_FloatForce = m_MaxJumpForce * (1 - (m_JumpTime / AirTime));
+		}
+
+
+		if (dash && canDash && !isWallSliding)
+		{
+			//m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_DashForce, 0f));
+			StartCoroutine(DashCooldown());
+		}
+		// If crouching, check to see if the character can stand up
+		if (isDashing)
+		{
+			m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * -m_DashForce, 0);
+		}
+		//only control the player if grounded or airControl is turned on
+		else if (m_Grounded || m_AirControl)
+		{
+			if (m_Rigidbody2D.velocity.y < -limitFallSpeed)
+				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, -limitFallSpeed);
+			// Move the character by finding the target velocity
+			Vector3 targetVelocity = new Vector2(move * 10f, m_Rigidbody2D.velocity.y);
+			// And then smoothing it out and applying it to the character
+			m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref velocity, m_MovementSmoothing);
+
+			// If the input is moving the player right and the player is facing left...
+			if (move > 0 && !m_FacingRight && !isWallSliding)
+			{
+				// ... flip the player.
+				Flip();
+			}
+			// Otherwise if the input is moving the player left and the player is facing right...
+			else if (move < 0 && m_FacingRight && !isWallSliding)
+			{
+				// ... flip the player.
+				Flip();
+			}
+		}
+		// If the player should jump...
+		if (m_Grounded && jump)
+		{
+			// Add a vertical force to the player.
+			animator.SetBool("IsJumping", true);
+			animator.SetBool("JumpUp", true);
+			m_Grounded = false;
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForce), ForceMode2D.Impulse);
+			m_JumpTime = 0;
+			canDoubleJump = true;
+			particleJumpDown.Play();
+			particleJumpUp.Play();
+		}
+		else if (!m_Grounded && jump && canDoubleJump && !isWallSliding)
+		{
+			canDoubleJump = false;
+			m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0);
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForce / 1.2f), ForceMode2D.Impulse);
+			m_JumpTime = 0;
+			jumpCanceled = false;
+			animator.SetBool("IsDoubleJumping", true);
+		}
+		else if (jumping && !jumpCanceled && !isWallSliding)
+		{
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_FloatForce));
+		}
+
+		else if (m_IsWall && !m_Grounded)
+		{
+			if (!oldWallSliding && m_Rigidbody2D.velocity.y < 0 || isDashing)
+			{
+				isWallSliding = true;
+				m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
+				Flip();
+				StartCoroutine(WaitToCheck(0.1f));
+				canDoubleJump = true;
+				animator.SetBool("IsWallSliding", true);
+			}
+			isDashing = false;
+
+			if (isWallSliding)
+			{
+				if (move * transform.localScale.x > 0.1f)
 				{
-					// ... flip the player.
-					Flip();
+					StartCoroutine(WaitToEndSliding());
 				}
-				// Otherwise if the input is moving the player left and the player is facing right...
-				else if (move < 0 && m_FacingRight && !isWallSliding)
+				else
 				{
-					// ... flip the player.
-					Flip();
+					oldWallSliding = true;
+					m_Rigidbody2D.velocity = new Vector2(-transform.localScale.x * 2, -5);
 				}
 			}
-			// If the player should jump...
-			if (m_Grounded && jump)
+
+			// Jumping from wallslide
+			if (jump && isWallSliding)
 			{
-				// Add a vertical force to the player.
 				animator.SetBool("IsJumping", true);
 				animator.SetBool("JumpUp", true);
-				m_Grounded = false;
-				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+				m_Rigidbody2D.velocity = new Vector2(0f, 0f);
+				m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_ImpulseJumpForce * 1.2f, m_ImpulseJumpForce), ForceMode2D.Impulse);
+				m_JumpTime = 0;
+				jumpWallStartX = transform.position.x;
+				limitVelOnWallJump = true;
 				canDoubleJump = true;
-				particleJumpDown.Play();
-				particleJumpUp.Play();
+				isWallSliding = false;
+				animator.SetBool("IsWallSliding", false);
+				oldWallSliding = false;
+				m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
+				canMove = false;
 			}
-			else if (!m_Grounded && jump && canDoubleJump && !isWallSliding)
-			{
-				canDoubleJump = false;
-				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0);
-				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));
-				animator.SetBool("IsDoubleJumping", true);
-			}
-
-			else if (m_IsWall && !m_Grounded)
-			{
-				if (!oldWallSlidding && m_Rigidbody2D.velocity.y < 0 || isDashing)
-				{
-					isWallSliding = true;
-					m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
-					Flip();
-					StartCoroutine(WaitToCheck(0.1f));
-					canDoubleJump = true;
-					animator.SetBool("IsWallSliding", true);
-				}
-				isDashing = false;
-
-				if (isWallSliding)
-				{
-					if (move * transform.localScale.x > 0.1f)
-					{
-						StartCoroutine(WaitToEndSliding());
-					}
-					else 
-					{
-						oldWallSlidding = true;
-						m_Rigidbody2D.velocity = new Vector2(-transform.localScale.x * 2, -5);
-					}
-				}
-
-				if (jump && isWallSliding)
-				{
-					animator.SetBool("IsJumping", true);
-					animator.SetBool("JumpUp", true); 
-					m_Rigidbody2D.velocity = new Vector2(0f, 0f);
-					m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_JumpForce *1.2f, m_JumpForce));
-					jumpWallStartX = transform.position.x;
-					limitVelOnWallJump = true;
-					canDoubleJump = true;
-					isWallSliding = false;
-					animator.SetBool("IsWallSliding", false);
-					oldWallSlidding = false;
-					m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
-					canMove = false;
-				}
-				else if (dash && canDash)
-				{
-					isWallSliding = false;
-					animator.SetBool("IsWallSliding", false);
-					oldWallSlidding = false;
-					m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
-					canDoubleJump = true;
-					StartCoroutine(DashCooldown());
-				}
-			}
-			else if (isWallSliding && !m_IsWall && canCheck) 
+			else if (dash && canDash)
 			{
 				isWallSliding = false;
 				animator.SetBool("IsWallSliding", false);
-				oldWallSlidding = false;
+				oldWallSliding = false;
 				m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
 				canDoubleJump = true;
+				StartCoroutine(DashCooldown());
 			}
 		}
+		else if (isWallSliding && !m_IsWall && canCheck)
+		{
+			isWallSliding = false;
+			animator.SetBool("IsWallSliding", false);
+			oldWallSliding = false;
+			m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
+			canDoubleJump = true;
+		}
+
 	}
 
-
+	/// <summary>
+	/// Flip the player sprite horizontally
+	/// </summary>
 	private void Flip()
 	{
 		// Switch the way the player is labelled as facing.
@@ -261,13 +292,13 @@ public class CharacterController2D : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
-	public void ApplyDamage(float damage, Vector3 position) 
+	public void ApplyDamage(float damage, Vector3 position)
 	{
 		if (!invincible)
 		{
 			animator.SetBool("Hit", true);
 			life -= damage;
-			Vector2 damageDir = Vector3.Normalize(transform.position - position) * 40f ;
+			Vector2 damageDir = Vector3.Normalize(transform.position - position) * 40f;
 			m_Rigidbody2D.velocity = Vector2.zero;
 			m_Rigidbody2D.AddForce(damageDir * 10);
 			if (life <= 0)
@@ -293,13 +324,13 @@ public class CharacterController2D : MonoBehaviour
 		canDash = true;
 	}
 
-	IEnumerator Stun(float time) 
+	IEnumerator Stun(float time)
 	{
 		canMove = false;
 		yield return new WaitForSeconds(time);
 		canMove = true;
 	}
-	IEnumerator MakeInvincible(float time) 
+	IEnumerator MakeInvincible(float time)
 	{
 		invincible = true;
 		yield return new WaitForSeconds(time);
@@ -325,7 +356,7 @@ public class CharacterController2D : MonoBehaviour
 		canDoubleJump = true;
 		isWallSliding = false;
 		animator.SetBool("IsWallSliding", false);
-		oldWallSlidding = false;
+		oldWallSliding = false;
 		m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
 	}
 

@@ -23,12 +23,12 @@ public class Player : MonoBehaviour
             jump = true;
 		}
 
-        characterController.Move(direction.x, false, jump);
+        characterController.Move(direction.x, false, false, jump);
     }
 
 	private void FixedUpdate()
 	{
-        characterController.Move(direction.x * Time.fixedDeltaTime, crouch, jump);
+        characterController.Move(direction.x * Time.fixedDeltaTime, crouch, false, jump);
         jump = false;
 	}
 

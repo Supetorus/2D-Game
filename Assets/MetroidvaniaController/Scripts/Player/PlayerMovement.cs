@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 	bool jump = false;
 	bool jumping = false;
 	bool dash = false;
+	bool crouch = false;
 
 	//bool dashAxis = false;
 
@@ -40,6 +41,13 @@ public class PlayerMovement : MonoBehaviour
 			dash = true;
 		}
 
+		if (Input.GetKeyDown(KeyCode.DownArrow))
+		{
+			crouch = true;
+		}else if (Input.GetKeyUp(KeyCode.DownArrow))
+		{
+			crouch = false;
+		}
 		/*if (Input.GetAxisRaw("Dash") == 1 || Input.GetAxisRaw("Dash") == -1) //RT in Unity 2017 = -1, RT in Unity 2019 = 1
 		{
 			if (dashAxis == false)
@@ -69,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
 	void FixedUpdate()
 	{
 		// Move our character
-		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, jumping, dash);
+		controller.Move(horizontalMove * Time.fixedDeltaTime, jump, jumping, dash, crouch);
 		jump = false;
 		dash = false;
 		jumping = false;

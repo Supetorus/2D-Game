@@ -44,7 +44,8 @@ public class PlayerMovement : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.DownArrow))
 		{
 			crouch = true;
-		}else if (Input.GetKeyUp(KeyCode.DownArrow))
+		}
+		else if (Input.GetKeyUp(KeyCode.DownArrow))
 		{
 			crouch = false;
 		}

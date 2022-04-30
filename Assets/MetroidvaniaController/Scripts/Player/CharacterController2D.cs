@@ -6,9 +6,9 @@ using System;
 
 public class CharacterController2D : MonoBehaviour
 {
-	[SerializeField] private float m_MaxJumpForce = 400f;                       // Amount of force added while the player is in the air
-	[SerializeField] private float m_ImpulseJumpForce = 400f;                   // Amount of force added when the player jumps.
-	[SerializeField] private float m_CrouchSpeed = 0.5f; // How fast the player moves while crouching. 1 = 100%.
+	[SerializeField, Tooltip("Amount of force added while the player is in the air")] private float m_MaxJumpForce = 400f;
+	[SerializeField, Tooltip("Amount of force added when the player jumps.")] private float m_ImpulseJumpForce = 400f;
+	[SerializeField, Tooltip("How fast the player moves while crouching. 1 = 100%.")] private float m_CrouchSpeed = 0.5f;
 	[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;  // How much to smooth out the movement
 	[SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
 	[SerializeField] private LayerMask m_WhatIsGround;                          // A mask determining what is ground to the character
@@ -47,6 +47,7 @@ public class CharacterController2D : MonoBehaviour
 	private bool canMove = true; //If player can move
 
 	private Animator animator;
+	private Health health;
 	public ParticleSystem particleJumpUp; //Trail particles
 	public ParticleSystem particleJumpDown; //Explosion particles
 
@@ -68,6 +69,7 @@ public class CharacterController2D : MonoBehaviour
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		health = GetComponent<Health>();
 
 		if (OnFallEvent == null)
 			OnFallEvent = new UnityEvent();
@@ -78,7 +80,6 @@ public class CharacterController2D : MonoBehaviour
 		if (OnCrouchEvent == null)
 			OnCrouchEvent = new BoolEvent();
 	}
-
 
 	private void FixedUpdate()
 	{
@@ -147,10 +148,16 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-
 	public void Move(float move, bool jump, bool jumping, bool dash, bool crouch)
 	{
-		if (!canMove) return;
+		// Freeze player movement if dead.
+		if (health.CurrentH <= 0)
+		{
+			m_Rigidbody2D.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
+			return;
+		}
+
+		if (m_Grounded && !jump && !jumping) animator.SetBool("IsJumping", false);
 
 		// Set jump force based on how long they have been in the air.
 		if (m_Grounded || isWallSliding)
@@ -170,7 +177,7 @@ public class CharacterController2D : MonoBehaviour
 		if (!crouch)
 		{
 			// If the character has a ceiling preventing them from standing up, keep them crouching
-			if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
+			if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround) && m_wasCrouching)
 			{
 				crouch = true;
 			}
@@ -359,26 +366,26 @@ public class CharacterController2D : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
-	public void ApplyDamage(float damage, Vector3 position)
-	{
-		if (!invincible)
-		{
-			animator.SetBool("Hit", true);
-			life -= damage;
-			Vector2 damageDir = Vector3.Normalize(transform.position - position) * 40f;
-			m_Rigidbody2D.velocity = Vector2.zero;
-			m_Rigidbody2D.AddForce(damageDir * 10);
-			if (life <= 0)
-			{
-				StartCoroutine(WaitToDead());
-			}
-			else
-			{
-				StartCoroutine(Stun(0.25f));
-				StartCoroutine(MakeInvincible(1f));
-			}
-		}
-	}
+	//public void ApplyDamage(float damage, Vector3 position)
+	//{
+	//	if (!invincible)
+	//	{
+	//		animator.SetBool("Hit", true);
+	//		life -= damage;
+	//		Vector2 damageDir = Vector3.Normalize(transform.position - position) * 40f;
+	//		m_Rigidbody2D.velocity = Vector2.zero;
+	//		m_Rigidbody2D.AddForce(damageDir * 10);
+	//		if (life <= 0)
+	//		{
+	//			StartCoroutine(WaitToDead());
+	//		}
+	//		else
+	//		{
+	//			StartCoroutine(Stun(0.25f));
+	//			StartCoroutine(MakeInvincible(1f));
+	//		}
+	//	}
+	//}
 
 	IEnumerator DashCooldown()
 	{
@@ -403,12 +410,12 @@ public class CharacterController2D : MonoBehaviour
 		yield return new WaitForSeconds(time);
 		invincible = false;
 	}
-	IEnumerator WaitToMove(float time)
-	{
-		canMove = false;
-		yield return new WaitForSeconds(time);
-		canMove = true;
-	}
+	//IEnumerator WaitToMove(float time)
+	//{
+	//	canMove = false;
+	//	yield return new WaitForSeconds(time);
+	//	canMove = true;
+	//}
 
 	IEnumerator WaitToCheck(float time)
 	{
@@ -427,15 +434,15 @@ public class CharacterController2D : MonoBehaviour
 		m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
 	}
 
-	IEnumerator WaitToDead()
-	{
-		animator.SetBool("IsDead", true);
-		canMove = false;
-		invincible = true;
-		GetComponent<Attack>().enabled = false;
-		yield return new WaitForSeconds(0.4f);
-		m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
-		yield return new WaitForSeconds(1.1f);
-		SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
-	}
+	//IEnumerator WaitToDead()
+	//{
+	//	animator.SetBool("IsDead", true);
+	//	canMove = false;
+	//	invincible = true;
+	//	GetComponent<Attack>().enabled = false;
+	//	yield return new WaitForSeconds(0.4f);
+	//	m_Rigidbody2D.velocity = new Vector2(0, m_Rigidbody2D.velocity.y);
+	//	yield return new WaitForSeconds(1.1f);
+	//	SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+	//}
 }

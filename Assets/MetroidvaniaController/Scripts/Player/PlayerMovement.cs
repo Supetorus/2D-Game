@@ -16,12 +16,8 @@ public class PlayerMovement : MonoBehaviour
 	bool dash = false;
 	bool crouch = false;
 
-	//bool dashAxis = false;
-
-	// Update is called once per frame
 	void Update()
 	{
-
 		horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
 
 		animator.SetFloat("Speed", Mathf.Abs(horizontalMove));

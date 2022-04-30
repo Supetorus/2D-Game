@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f7d3489f0bd56b4fa9ed721c11d5d32, type: 3}
-  m_Name: Integration
+  m_Script: {fileID: 11500000, guid: b7b0b8f79a454174bb180d7c419a11e2, type: 3}
+  m_Name: Lives
   m_EditorClassIdentifier: 
-  _value: 0
-  values:
-  - Integration 1
-  - Integration 2
-  - Integration 3
+  _value: 998
+  min: 0
+  max: 999999

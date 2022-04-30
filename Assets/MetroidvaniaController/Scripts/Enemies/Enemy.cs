@@ -4,6 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 
 	public float life = 10;
+	public float damage = 100;
 	private bool isPlat;
 	private bool isObstacle;
 	private Transform fallCheck;
@@ -32,8 +33,8 @@ public class Enemy : MonoBehaviour {
 			StartCoroutine(DestroyEnemy());
 		}
 
-		isPlat = Physics2D.OverlapCircle(fallCheck.position, .2f, 1 << LayerMask.NameToLayer("Default"));
-		isObstacle = Physics2D.OverlapCircle(wallCheck.position, .2f, turnLayerMask);
+		isPlat = Physics2D.OverlapCircle(fallCheck.position, .1f, 1 << LayerMask.NameToLayer("Default"));
+		isObstacle = Physics2D.OverlapCircle(wallCheck.position, .1f, turnLayerMask);
 
 		if (!isHitted && life > 0 && Mathf.Abs(rb.velocity.y) < 0.5f)
 		{
@@ -41,11 +42,11 @@ public class Enemy : MonoBehaviour {
 			{
 				if (facingRight)
 				{
-					rb.velocity = new Vector2(-speed, rb.velocity.y);
+					rb.velocity = new Vector2(speed, rb.velocity.y);
 				}
 				else
 				{
-					rb.velocity = new Vector2(speed, rb.velocity.y);
+					rb.velocity = new Vector2(-speed, rb.velocity.y);
 				}
 			}
 			else
@@ -82,7 +83,7 @@ public class Enemy : MonoBehaviour {
 	{
 		if (collision.gameObject.tag == "Player" && life > 0)
 		{
-			collision.gameObject.GetComponent<CharacterController2D>().ApplyDamage(2f, transform.position);
+			collision.gameObject.GetComponent<Health>().TakeDamage(damage, transform.position, 400f);
 		}
 	}
 

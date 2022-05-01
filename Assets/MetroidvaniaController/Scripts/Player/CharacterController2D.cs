@@ -15,8 +15,8 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] private Transform m_GroundCheck;                           // A position marking where to check if the player is grounded.
 	[SerializeField] private Transform m_WallCheck;                             //Posicion que controla si el personaje toca una pared
 	[SerializeField] private Transform m_CeilingCheck;                          //Position to check for ceiling.
-	[SerializeField] private CapsuleCollider2D m_CrouchDisableCollider;			// The collider disabled by crouching.
-	[SerializeField] private CapsuleCollider2D m_CrouchEnableCollider;			// The collider enabled by crouching.
+	[SerializeField] private CapsuleCollider2D m_CrouchDisableCollider;         // The collider disabled by crouching.
+	[SerializeField] private CapsuleCollider2D m_CrouchEnableCollider;          // The collider enabled by crouching.
 
 	const float k_CeilingRadius = .15f; // Radius of the overlap circle to determine if under ceiling.
 	const float k_GroundedRadius = .15f; // Radius of the overlap circle to determine if grounded
@@ -28,6 +28,7 @@ public class CharacterController2D : MonoBehaviour
 	private float m_FloatForce; // The amount of force applied based on how long player has been in air.
 	private float m_JumpTime; // The amount of time the player has been in the air.
 	public float AirTime = 1; // The amount of time the jump can continue to gain force (in seconds).
+	private float prevGravityScale;
 
 	public bool canDoubleJump = true; //If player can double jump
 	[SerializeField] private float m_DashForce = 25f;
@@ -226,7 +227,8 @@ public class CharacterController2D : MonoBehaviour
 			//m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_DashForce, 0f));
 			StartCoroutine(DashCooldown());
 		}
-		// If crouching, check to see if the character can stand up
+
+		//if currently dashing.
 		if (timeLockedDashing)
 		{
 			m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * m_DashForce, 0);
@@ -342,7 +344,6 @@ public class CharacterController2D : MonoBehaviour
 			m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
 			canDoubleJump = true;
 		}
-
 	}
 
 	IEnumerator CrouchCooldown()
@@ -389,11 +390,14 @@ public class CharacterController2D : MonoBehaviour
 
 	IEnumerator DashCooldown()
 	{
+		prevGravityScale = m_Rigidbody2D.gravityScale;
+		m_Rigidbody2D.gravityScale = 0;
 		animator.SetBool("IsDashing", true);
 		timeLockedDashing = true;
 		canDash = false;
 		yield return new WaitForSeconds(0.1f);
 		timeLockedDashing = false;
+		m_Rigidbody2D.gravityScale = prevGravityScale;
 		yield return new WaitForSeconds(0.5f);
 		canDash = true;
 	}

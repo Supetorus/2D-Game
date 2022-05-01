@@ -173,7 +173,7 @@ MonoBehaviour:
   m_AirControl: 1
   m_WhatIsGround:
     serializedVersion: 2
-    m_Bits: 61
+    m_Bits: 9
   m_GroundCheck: {fileID: 5881040141255407324}
   m_WallCheck: {fileID: 5873589596261770592}
   m_CeilingCheck: {fileID: 4076128482905389017}
@@ -207,13 +207,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9955788a5eaffa49a9297f38eaa6202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dmgValue: 4
-  throwableObject: {fileID: 5532974359214069763, guid: 340067e8e5a097546ad175f1d00a6ece, type: 3}
+  damage: 1
+  knockback: 200
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 64
   attackCheck: {fileID: 5880890297669303064}
+  attackRadius: 0.8
+  throwableObject: {fileID: 5532974359214069763, guid: 340067e8e5a097546ad175f1d00a6ece, type: 3}
   animator: {fileID: 5820446531683511608}
   canAttack: 1
-  isTimeToCheck: 0
-  cam: {fileID: 0}
 --- !u!114 &5766611385843884536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,9 +447,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f5bd78ce307854cbc503705733969a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 9
   regenerationRate: 0
+  knockback: 1
+  invincibilityTime: 0.4
   numberOfLives: {fileID: 11400000, guid: d76fe2faf8a3f7c4ea7a5025b24784e7, type: 2}
+  toDestroyOnDeath: {fileID: 0}
+  destroyTime: 0
   onTakeDamage:
     m_PersistentCalls:
       m_Calls: []

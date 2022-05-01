@@ -8,8 +8,12 @@ public class Health : MonoBehaviour
 {
 	[SerializeField, Tooltip("The maximum and starting health")] public float maxHealth;
 	[SerializeField, Tooltip("How much health is gained per second, 0 to turn off")] public float regenerationRate;
-	[SerializeField, Tooltip("Whether or not the object is knocked back when damaged")] public readonly bool knockback = true;
-	[SerializeField] IntData numberOfLives;
+	[SerializeField, Tooltip("Whether or not the object is knocked back when damaged")] public bool knockback = true;
+	[SerializeField, Tooltip("How long this object should be invincible when taking damage")] public float invincibilityTime = 0.2f;
+	[SerializeField, Tooltip("The number of lives this object has, if it should respawn.")] IntData numberOfLives;
+	[SerializeField, Tooltip("The object to be destroyed on death. Corpse will stick around if this is undefined.")] GameObject toDestroyOnDeath;
+	[SerializeField, Tooltip("The amount of time to wait before removing the dead body.")] float destroyTime;
+	//[SerializeField, Tooltip("A prefab to place when the object is destroyed.")] GameObject deathPrefab;
 
 	[SerializeField, Tooltip("Events called when object takes damage")] private UnityEvent onTakeDamage;
 	[SerializeField, Tooltip("Events called when object's health goes below 0")] private UnityEvent onDeath;
@@ -21,7 +25,8 @@ public class Health : MonoBehaviour
 	private CheckpointManager checkpointManager;
 	private bool deathAnimationComplete = false;
 	private Coroutine dieCoroutine;
-	//TODO invincibility frames
+	private Coroutine hurtCoroutine;
+	private bool isInvincible = false;
 
 	/// <summary>
 	/// The current amount of health this object has.
@@ -43,6 +48,8 @@ public class Health : MonoBehaviour
 	/// <param name="knockbackPower">The amount of power in the knockback.</param>
 	public void TakeDamage(float damage, Vector3 origin, float knockbackPower)
 	{
+		if (isInvincible) return;
+
 		CurrentH = Mathf.Max(CurrentH - damage, 0);
 		if (CurrentH == 0)
 		{
@@ -50,8 +57,7 @@ public class Health : MonoBehaviour
 		}
 		else
 		{
-			animator.SetBool("Hit", true);
-			onTakeDamage?.Invoke();
+			if (hurtCoroutine == null) hurtCoroutine = StartCoroutine(Hurt());
 			//TODO turn off animator bool hit in coroutine.
 		}
 
@@ -61,26 +67,6 @@ public class Health : MonoBehaviour
 			rigidBody.velocity = Vector2.zero;
 			rigidBody.AddForce(damageDir * knockbackPower);
 		}
-	}
-
-	/// <summary>
-	/// This should be called by the death animation's last frame.
-	/// </summary>
-	public void CompletedDeathAnimation() {
-		deathAnimationComplete = true;
-	}
-
-	/// <summary>
-	/// Waits until the death animation has finished. Death animation must have an event that calls CompletedDeathAnimation.
-	/// </summary>
-	private IEnumerator Die()
-	{
-		animator.SetBool("IsDead", true);
-		numberOfLives.value -= 1;
-		yield return new WaitUntil(() => deathAnimationComplete);
-		//TODO add respawn button to UI for player to click before respawning.
-		if (checkpointManager != null && numberOfLives.value > 0) checkpointManager.Respawn();
-		onDeath?.Invoke();
 	}
 
 	/// <summary>
@@ -96,6 +82,44 @@ public class Health : MonoBehaviour
 		animator.SetBool("Healing", true);
 
 		//TODO turn off animator bool healing in coroutine.
+	}
+
+	/// <summary>
+	/// This should be called by the death animation's last frame.
+	/// </summary>
+	public void CompletedDeathAnimation() {
+		deathAnimationComplete = true;
+	}
+
+	/// <summary>
+	/// Waits until the death animation has finished. Death animation must have an event that calls CompletedDeathAnimation.
+	/// </summary>
+	private IEnumerator Die()
+	{
+		foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
+		knockback = false;
+		foreach (var c in GetComponents<Collider>())
+		{
+			c.enabled = false;
+		}
+		animator.SetBool("IsDead", true);
+		numberOfLives.value -= 1;
+		yield return new WaitUntil(() => deathAnimationComplete);
+		//TODO add respawn button to UI for player to click before respawning.
+		if (checkpointManager != null && numberOfLives != null && numberOfLives.value > 0) checkpointManager.Respawn();
+		onDeath?.Invoke();
+		Destroy(toDestroyOnDeath, destroyTime); // This is simple, but might not be the best way to do this.
+	}
+
+	private IEnumerator Hurt()
+	{
+		animator.SetBool("Hit", true);
+		onTakeDamage?.Invoke();
+		isInvincible = true;
+		yield return new WaitForSeconds(invincibilityTime);
+		isInvincible = false;
+		animator.SetBool("Hit", false);
+		hurtCoroutine = null;
 	}
 
 	private void Update()

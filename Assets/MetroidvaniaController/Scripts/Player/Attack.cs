@@ -4,29 +4,23 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-	public float dmgValue = 4;
-	public GameObject throwableObject;
+	public float damage = 4f;
+	public float knockback = 400f;
+	public LayerMask enemyLayers;
 	public Transform attackCheck;
-	private Rigidbody2D m_Rigidbody2D;
+	public float attackRadius = 1f;
+	public GameObject throwableObject;
 	public Animator animator;
 	public bool canAttack = true;
-	public bool isTimeToCheck = false;
 
-	public GameObject cam;
-
-	private void Awake()
-	{
-		m_Rigidbody2D = GetComponent<Rigidbody2D>();
-	}
+	private Coroutine currentAttack;
 
 	// Update is called once per frame
 	void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.X) && canAttack)
 		{
-			canAttack = false;
-			animator.SetBool("IsAttacking", true);
-			StartCoroutine(AttackCooldown());
+			if (currentAttack == null) currentAttack = StartCoroutine(FrontAttack());
 		}
 
 		if (Input.GetKeyDown(KeyCode.V) && throwableObject != null)
@@ -38,27 +32,23 @@ public class Attack : MonoBehaviour
 		}
 	}
 
-	IEnumerator AttackCooldown()
+	IEnumerator FrontAttack()
 	{
+		Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackCheck.position, attackRadius, enemyLayers);
+		foreach (var enemy in hitEnemies)
+		{
+			enemy.GetComponent<Health>()?.TakeDamage(damage, attackCheck.position, knockback);
+		}
+		canAttack = false;
+		animator.SetBool("IsAttacking", true);
 		yield return new WaitForSeconds(0.25f);
 		canAttack = true;
+		animator.SetBool("IsAttacking", false);
+		currentAttack = null;
 	}
 
-	public void DoDashDamage()
+	private void OnDrawGizmosSelected()
 	{
-		dmgValue = Mathf.Abs(dmgValue);
-		Collider2D[] collidersEnemies = Physics2D.OverlapCircleAll(attackCheck.position, 0.9f);
-		for (int i = 0; i < collidersEnemies.Length; i++)
-		{
-			if (collidersEnemies[i].gameObject.tag == "Enemy")
-			{
-				if (collidersEnemies[i].transform.position.x - transform.position.x < 0)
-				{
-					dmgValue = -dmgValue;
-				}
-				collidersEnemies[i].gameObject.SendMessage("ApplyDamage", dmgValue);
-				cam?.GetComponent<CameraFollow>().ShakeCamera();
-			}
-		}
+		Gizmos.DrawWireSphere(attackCheck.position, attackRadius);
 	}
 }

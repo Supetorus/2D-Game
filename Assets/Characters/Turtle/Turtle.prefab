@@ -186,9 +186,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f5bd78ce307854cbc503705733969a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 5
+  maxHealth: 2
   regenerationRate: 0
   knockback: 1
+  invincibilityTime: 0.2
   numberOfLives: {fileID: 0}
   toDestroyOnDeath: {fileID: 8344666408111876264}
   destroyTime: 10

@@ -246,7 +246,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Play
+  m_text: Main Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 43a68f8f30ce1ff46b136bf34560de0f, type: 2}
   m_sharedMaterial: {fileID: -1456353452147272262, guid: 43a68f8f30ce1ff46b136bf34560de0f, type: 2}
@@ -391,8 +391,8 @@ Canvas:
   m_GameObject: {fileID: 347911678}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1518492344}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -458,7 +458,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 42}
+  m_AnchoredPosition: {x: 0, y: 176}
   m_SizeDelta: {x: 405.01, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1339932643
@@ -481,7 +481,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Welcome to Game!
+  m_text: 'Congratulations!
+
+
+    You have completed all available levels.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 43a68f8f30ce1ff46b136bf34560de0f, type: 2}
   m_sharedMaterial: {fileID: -1456353452147272262, guid: 43a68f8f30ce1ff46b136bf34560de0f, type: 2}
@@ -508,8 +511,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 70
-  m_fontSizeBase: 70
+  m_fontSize: 44.16
+  m_fontSizeBase: 44.16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -595,8 +598,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -143}
-  m_SizeDelta: {x: 301.9724, y: 131.1017}
+  m_AnchoredPosition: {x: 0, y: -203}
+  m_SizeDelta: {x: 595.6934, y: 186.1743}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1503709812
 MonoBehaviour:
@@ -704,7 +707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e3d397c17ea81544aa83829f7d06241, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: 
+  sceneName: _Title Screen
 --- !u!1 &1518492342
 GameObject:
   m_ObjectHideFlags: 0

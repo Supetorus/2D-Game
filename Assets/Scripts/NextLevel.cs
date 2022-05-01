@@ -5,14 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class NextLevel : MonoBehaviour
 {
+	[SerializeField, Tooltip("The scene name to load. If none is given will attempt to load next scene in build index order.")] private string sceneName;
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
 		if (!collision.gameObject.CompareTag("Player")) return;
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+		if (!string.IsNullOrEmpty(sceneName))
+		{
+			SceneManager.LoadScene(sceneName);
+		}
+		else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
 
-	public void LoadNextScene()
+	public void LoadScene()
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+		if (!string.IsNullOrEmpty(sceneName))
+		{
+			SceneManager.LoadScene(sceneName);
+		}
+		else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
 }

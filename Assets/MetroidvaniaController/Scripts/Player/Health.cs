@@ -108,7 +108,7 @@ public class Health : MonoBehaviour
 		//TODO add respawn button to UI for player to click before respawning.
 		if (checkpointManager != null && numberOfLives != null && numberOfLives.value > 0) checkpointManager.Respawn();
 		onDeath?.Invoke();
-		Destroy(toDestroyOnDeath, destroyTime); // This is simple, but might not be the best way to do this.
+		if (toDestroyOnDeath != null) Destroy(toDestroyOnDeath, destroyTime); // This is simple, but might not be the best way to do this.
 	}
 
 	private IEnumerator Hurt()

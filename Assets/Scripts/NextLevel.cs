@@ -10,4 +10,9 @@ public class NextLevel : MonoBehaviour
 		if (!collision.gameObject.CompareTag("Player")) return;
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
+
+	public void LoadNextScene()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+	}
 }

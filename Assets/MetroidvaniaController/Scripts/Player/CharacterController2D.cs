@@ -7,7 +7,8 @@ using System;
 public class CharacterController2D : MonoBehaviour
 {
 	[SerializeField, Tooltip("Amount of force added while the player is in the air")] private float m_MaxJumpForce = 400f;
-	[SerializeField, Tooltip("Amount of force added when the player jumps.")] private float m_ImpulseJumpForce = 400f;
+	[SerializeField, Tooltip("Amount of force added when the player jumps.")] private float m_ImpulseJumpForceY = 10f;
+	[SerializeField, Tooltip("Amount of horizontal force added when the player jumps off a wall.")] private float m_WallJumpForce = 800f;
 	[SerializeField, Tooltip("How fast the player moves while crouching. 1 = 100%.")] private float m_CrouchSpeed = 0.5f;
 	[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;  // How much to smooth out the movement
 	[SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
@@ -33,7 +34,7 @@ public class CharacterController2D : MonoBehaviour
 	public bool canDoubleJump = true; //If player can double jump
 	[SerializeField] private float m_DashForce = 25f;
 	private bool canDash = true;
-	private bool timeLockedDashing = false; //If player is dashing
+	private bool isDashing = false; //If player is dashing
 	private bool m_IsWall = false; //If there is a wall in front of the player
 	private bool isWallSliding = false; //If player is sliding in a wall
 	private bool prevWallSliding = false; //If player is sliding in a wall in the previous frame
@@ -97,7 +98,7 @@ public class CharacterController2D : MonoBehaviour
 			if (!wasGrounded)
 			{
 				OnLandEvent.Invoke();
-				if (!m_IsWall && !timeLockedDashing)
+				if (!m_IsWall && !isDashing)
 					particleJumpDown.Play();
 				canDoubleJump = true;
 				if (m_Rigidbody2D.velocity.y < 0f)
@@ -115,7 +116,7 @@ public class CharacterController2D : MonoBehaviour
 			{
 				if (collidersWall[i].gameObject != null)
 				{
-					timeLockedDashing = false;
+					isDashing = false;
 					m_IsWall = true;
 				}
 			}
@@ -158,6 +159,7 @@ public class CharacterController2D : MonoBehaviour
 			return;
 		}
 
+		// Turn off jumping animation if on the ground and not jumping.
 		if (m_Grounded && !jump && !jumping) animator.SetBool("IsJumping", false);
 
 		// Set jump force based on how long they have been in the air.
@@ -229,10 +231,11 @@ public class CharacterController2D : MonoBehaviour
 		}
 
 		//if currently dashing.
-		if (timeLockedDashing)
+		if (isDashing)
 		{
 			m_Rigidbody2D.velocity = new Vector2(transform.localScale.x * m_DashForce, 0);
 		}
+
 		//only control the player if grounded or airControl is turned on
 		else if (m_Grounded || m_AirControl)
 		{
@@ -256,6 +259,7 @@ public class CharacterController2D : MonoBehaviour
 				Flip();
 			}
 		}
+
 		// If the player should jump...
 		if (m_Grounded && jump)
 		{
@@ -263,7 +267,7 @@ public class CharacterController2D : MonoBehaviour
 			animator.SetBool("IsJumping", true);
 			animator.SetBool("JumpUp", true);
 			m_Grounded = false;
-			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForce), ForceMode2D.Impulse);
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForceY), ForceMode2D.Impulse);
 			m_JumpTime = 0;
 			canDoubleJump = true;
 			particleJumpDown.Play();
@@ -273,7 +277,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			canDoubleJump = false;
 			m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0);
-			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForce / 1.2f), ForceMode2D.Impulse);
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_ImpulseJumpForceY / 1.2f), ForceMode2D.Impulse);
 			m_JumpTime = 0;
 			jumpCanceled = false;
 			animator.SetBool("IsDoubleJumping", true);
@@ -285,7 +289,8 @@ public class CharacterController2D : MonoBehaviour
 
 		else if (m_IsWall && !m_Grounded)
 		{
-			if (!prevWallSliding && m_Rigidbody2D.velocity.y < 0 || timeLockedDashing)
+			// TODO Change this part to make player start wall sliding if pressed against the wall
+			if (!prevWallSliding && m_Rigidbody2D.velocity.y < 0 || isDashing)
 			{ // start wall sliding
 				isWallSliding = true;
 				m_WallCheck.localPosition = new Vector3(-m_WallCheck.localPosition.x, m_WallCheck.localPosition.y, 0);
@@ -294,7 +299,7 @@ public class CharacterController2D : MonoBehaviour
 				canDoubleJump = true;
 				animator.SetBool("IsWallSliding", true);
 			}
-			timeLockedDashing = false;
+			isDashing = false;
 
 			if (isWallSliding)
 			{
@@ -315,7 +320,10 @@ public class CharacterController2D : MonoBehaviour
 				animator.SetBool("IsJumping", true);
 				animator.SetBool("JumpUp", true);
 				m_Rigidbody2D.velocity = new Vector2(0f, 0f);
-				m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_ImpulseJumpForce * 1.2f, m_ImpulseJumpForce), ForceMode2D.Impulse);
+				//old x jump force
+				//m_XJumpForce = transform.localScale.x * m_ImpulseJumpForce * 1.2f
+				//TODO fix wall jump force.
+				m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_WallJumpForce, m_WallJumpForce / 3), ForceMode2D.Impulse);
 				m_JumpTime = 0;
 				jumpWallStartX = transform.position.x;
 				limitVelOnWallJump = true;
@@ -393,10 +401,10 @@ public class CharacterController2D : MonoBehaviour
 		prevGravityScale = m_Rigidbody2D.gravityScale;
 		m_Rigidbody2D.gravityScale = 0;
 		animator.SetBool("IsDashing", true);
-		timeLockedDashing = true;
+		isDashing = true;
 		canDash = false;
 		yield return new WaitForSeconds(0.1f);
-		timeLockedDashing = false;
+		isDashing = false;
 		m_Rigidbody2D.gravityScale = prevGravityScale;
 		yield return new WaitForSeconds(0.5f);
 		canDash = true;

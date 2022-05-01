@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uncheckedSprite: {fileID: -2746839580606631015, guid: 9a93b0e83a69c7a4aa8b1eb9d0fbcffa, type: 3}
-  checkedSprite: {fileID: 2710443080846324409, guid: 9a93b0e83a69c7a4aa8b1eb9d0fbcffa, type: 3}
+  checkedSprite: {fileID: -1312994402987499043, guid: 9a93b0e83a69c7a4aa8b1eb9d0fbcffa, type: 3}
   lastCheckpoint: {fileID: 0}
   spawnPoint: {fileID: 651384611736747818}
 --- !u!82 &651384610538138305

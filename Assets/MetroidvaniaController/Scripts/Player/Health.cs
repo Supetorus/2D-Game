@@ -97,16 +97,10 @@ public class Health : MonoBehaviour
 	private IEnumerator Die()
 	{
 		foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
-		knockback = false;
-		foreach (var c in GetComponents<Collider>())
-		{
-			c.enabled = false;
-		}
+		//knockback = false;
 		animator.SetBool("IsDead", true);
-		numberOfLives.value -= 1;
 		yield return new WaitUntil(() => deathAnimationComplete);
-		//TODO add respawn button to UI for player to click before respawning.
-		if (checkpointManager != null && numberOfLives != null && numberOfLives.value > 0) checkpointManager.Respawn();
+		numberOfLives.value -= 1;
 		onDeath?.Invoke();
 		if (toDestroyOnDeath != null) Destroy(toDestroyOnDeath, destroyTime); // This is simple, but might not be the best way to do this.
 	}

@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class NextLevel : MonoBehaviour
+public class SceneSelector : MonoBehaviour
 {
 	[SerializeField, Tooltip("The scene name to load. If none is given will attempt to load next scene in build index order.")] private string sceneName;
 

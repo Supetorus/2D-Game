@@ -167,7 +167,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MaxJumpForce: 60
-  m_ImpulseJumpForce: 10
+  m_ImpulseJumpForceY: 10
+  m_WallJumpForce: 800
   m_CrouchSpeed: 0.5
   m_MovementSmoothing: 0.05
   m_AirControl: 1
@@ -476,6 +477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnPrefab: {fileID: 11400000, guid: 89a9409d135361845a2cee12078c1148, type: 2}
+  lives: {fileID: 0}
 --- !u!1 &5879051081951920418
 GameObject:
   m_ObjectHideFlags: 0

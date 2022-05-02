@@ -1094,6 +1094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: _Title Screen
+  wait: 0
 --- !u!1 &5426992069416353204
 GameObject:
   m_ObjectHideFlags: 0
@@ -2572,7 +2573,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 651384610538138304, guid: 4d8673b4887bbd349b3ba41f2e2cacd6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 651384610538138304, guid: 4d8673b4887bbd349b3ba41f2e2cacd6, type: 3}
       propertyPath: m_LocalPosition.z

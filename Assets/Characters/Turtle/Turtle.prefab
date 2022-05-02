@@ -54,7 +54,7 @@ MonoBehaviour:
   damage: 1
   turnLayerMask:
     serializedVersion: 2
-    m_Bits: 513
+    m_Bits: 65
   speed: 4
   isInvincible: 0
 --- !u!212 &8344666408111876263

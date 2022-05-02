@@ -138,3 +138,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clip: {fileID: 8300000, guid: a7e607ee31ed9a647bb0f07d7da81ba6, type: 3}
+  matchTag: Player

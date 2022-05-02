@@ -1175,12 +1175,40 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: c75bf61242966f84d95e9a3f7577e093, type: 3}
     - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: avgFadeTimeout
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
       propertyPath: enableAutopilot
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: numActiveTracks
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
       propertyPath: masterFadeDuration
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: fadeTimeoutVariance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: trackFadeInDuration
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: trackNumberVariance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: trackFadeOutDuration
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11413628, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}
+      propertyPath: changeTracksAutomatically
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7e2f009af2ec426c98e1b996bba693c, type: 3}

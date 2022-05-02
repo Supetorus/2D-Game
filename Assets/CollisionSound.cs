@@ -5,8 +5,13 @@ using UnityEngine;
 public class CollisionSound : MonoBehaviour
 {
 	public AudioClip clip;
+	public string matchTag;
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		AudioSource.PlayClipAtPoint(clip, transform.position);
+		if (string.IsNullOrEmpty(matchTag) || collision.gameObject.CompareTag(matchTag))
+		{
+			AudioSource.PlayClipAtPoint(clip, transform.position);
+		}
 	}
 }

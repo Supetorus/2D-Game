@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : MonoBehaviour
+{
 
 
 	//public float life = 10;
@@ -10,7 +11,9 @@ public class Enemy : MonoBehaviour {
 	private bool isObstacle;
 	private bool isGrounded;
 	private Transform fallCheck;
+	private float fallCheckRadius = 0.1f;
 	private Transform wallCheck;
+	private float wallCheckRadius = 0.1f;
 	private Transform groundcheck;
 	private float groundCheckRadius = 0.1f;
 	private Health health;
@@ -18,33 +21,50 @@ public class Enemy : MonoBehaviour {
 	private Rigidbody2D rb;
 
 	private bool facingRight = true;
-	
+
 	public float speed = 5f;
 
 	public bool isInvincible = false;
 	private bool isHitted = false;
 
-	void Awake () {
+	void Awake()
+	{
 		fallCheck = transform.Find("FallCheck");
 		wallCheck = transform.Find("WallCheck");
 		groundcheck = transform.Find("GroundCheck");
 		health = GetComponent<Health>();
 		rb = GetComponent<Rigidbody2D>();
 	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
 
-		// Freeze player movement if dead.
+	// Update is called once per frame
+	void FixedUpdate()
+	{
+
+		// Freeze movement if dead.
 		if (health.CurrentH <= 0)
 		{
 			rb.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
 			return;
 		}
 
-		isPlat = Physics2D.OverlapCircle(fallCheck.position, .1f, 1 << LayerMask.NameToLayer("Default"));
-		isObstacle = Physics2D.OverlapCircle(wallCheck.position, .1f, turnLayerMask);
-		isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, turnLayerMask);
+		isPlat = false;
+		foreach (var col in Physics2D.OverlapCircleAll(fallCheck.position, fallCheckRadius, 1 << LayerMask.NameToLayer("Default")))
+		{
+			if (col.gameObject != this.gameObject) { isPlat = true; break; }
+		}
+
+
+		isObstacle = false;
+		foreach (var col in Physics2D.OverlapCircleAll(wallCheck.position, wallCheckRadius, turnLayerMask))
+		{
+			if (col.gameObject != this.gameObject) { isObstacle = true; break; }
+		}
+
+		isGrounded = false;
+		foreach (var col in Physics2D.OverlapCircleAll(groundcheck.position, groundCheckRadius, turnLayerMask))
+		{
+			if (col.gameObject != this.gameObject) { isGrounded = true; break; }
+		}
 
 		if (!isHitted && isGrounded)
 		{
@@ -66,10 +86,11 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	void Flip (){
+	void Flip()
+	{
 		// Switch the way the player is labelled as facing.
 		facingRight = !facingRight;
-		
+
 		// Multiply the player's x local scale by -1.
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
@@ -118,8 +139,10 @@ public class Enemy : MonoBehaviour {
 	//	Destroy(gameObject);
 	//}
 
-	//private void OnDrawGizmosSelected()
-	//{
-	//	Gizmos.DrawWireSphere(groundcheck.position, groundCheckRadius);
-	//}
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.DrawWireSphere(fallCheck.position, fallCheckRadius);
+		Gizmos.DrawWireSphere(groundcheck.position, groundCheckRadius);
+		Gizmos.DrawWireSphere(wallCheck.position, wallCheckRadius);
+	}
 }

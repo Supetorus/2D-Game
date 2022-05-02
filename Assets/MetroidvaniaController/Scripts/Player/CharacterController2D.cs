@@ -323,7 +323,7 @@ public class CharacterController2D : MonoBehaviour
 				//old x jump force
 				//m_XJumpForce = transform.localScale.x * m_ImpulseJumpForce * 1.2f
 				//TODO fix wall jump force.
-				m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_WallJumpForce, m_WallJumpForce / 3), ForceMode2D.Impulse);
+				m_Rigidbody2D.AddForce(new Vector2(transform.localScale.x * m_WallJumpForce, m_WallJumpForce / 2), ForceMode2D.Impulse);
 				m_JumpTime = 0;
 				jumpWallStartX = transform.position.x;
 				limitVelOnWallJump = true;

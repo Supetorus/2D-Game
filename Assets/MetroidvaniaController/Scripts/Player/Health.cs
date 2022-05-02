@@ -10,6 +10,7 @@ public class Health : MonoBehaviour
 	[SerializeField, Tooltip("How much health is gained per second, 0 to turn off")] public float regenerationRate;
 	[SerializeField, Tooltip("Whether or not the object is knocked back when damaged")] public bool knockback = true;
 	[SerializeField, Tooltip("How long this object should be invincible when taking damage")] public float invincibilityTime = 0.2f;
+
 	[SerializeField, Tooltip("The number of lives this object has, if it should respawn.")] IntData numberOfLives;
 	[SerializeField, Tooltip("The object to be destroyed on death. Corpse will stick around if this is undefined.")] GameObject toDestroyOnDeath;
 	[SerializeField, Tooltip("The amount of time to wait before removing the dead body.")] float destroyTime;
@@ -81,6 +82,14 @@ public class Health : MonoBehaviour
 		animator.SetBool("Healing", true);
 
 		//TODO turn off animator bool healing in coroutine.
+	}
+
+	/// <summary>
+	/// Activates or deactivates invincibility, in case it should be for reasons other than taking damage.
+	/// </summary>
+	internal void SetInvincible(bool v)
+	{
+		isInvincible = v;
 	}
 
 	/// <summary>

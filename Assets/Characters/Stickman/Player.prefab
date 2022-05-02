@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 5847602125299312164}
   - component: {fileID: 5866141454112666384}
   - component: {fileID: 5816197955243271004}
-  - component: {fileID: 7975935817744956871}
+  - component: {fileID: 4717165180179068617}
   - component: {fileID: 882709791257675817}
   - component: {fileID: 6162322349702616155}
   m_Layer: 1
@@ -437,7 +437,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &7975935817744956871
+--- !u!114 &4717165180179068617
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -446,10 +446,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5879023815822408276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f5bd78ce307854cbc503705733969a, type: 3}
+  m_Script: {fileID: 11500000, guid: a72a3a1e639e4444fb8b86830a67de73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 9
+  maxHealth: 0
   regenerationRate: 0
   knockback: 1
   invincibilityTime: 0.4
@@ -465,6 +465,7 @@ MonoBehaviour:
   onHeal:
     m_PersistentCalls:
       m_Calls: []
+  healthData: {fileID: 0}
 --- !u!114 &882709791257675817
 MonoBehaviour:
   m_ObjectHideFlags: 0

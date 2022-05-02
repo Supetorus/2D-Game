@@ -10,11 +10,11 @@ public class Enemy : MonoBehaviour
 	private bool isPlat;
 	private bool isObstacle;
 	private bool isGrounded;
-	private Transform fallCheck;
+	[SerializeField] private Transform fallCheck;
 	private float fallCheckRadius = 0.1f;
-	private Transform wallCheck;
+	[SerializeField] private Transform wallCheck;
 	private float wallCheckRadius = 0.1f;
-	private Transform groundcheck;
+	[SerializeField] private Transform groundcheck;
 	private float groundCheckRadius = 0.1f;
 	private Health health;
 	public LayerMask turnLayerMask;
@@ -29,9 +29,6 @@ public class Enemy : MonoBehaviour
 
 	void Awake()
 	{
-		fallCheck = transform.Find("FallCheck");
-		wallCheck = transform.Find("WallCheck");
-		groundcheck = transform.Find("GroundCheck");
 		health = GetComponent<Health>();
 		rb = GetComponent<Rigidbody2D>();
 	}

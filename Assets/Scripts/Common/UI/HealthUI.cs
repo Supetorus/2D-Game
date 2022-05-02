@@ -5,25 +5,22 @@ using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
-	//[SerializeField, Tooltip("The image that will be displayed as a single health.")] GameObject healthRep;
-	[SerializeField, Tooltip("The object's health that will be represented.")] Health health;
 	int shownHealth = 9;
 
-	private void Update()
+	public void Change(float newValue)
 	{
-		if (shownHealth < health.CurrentH)
+		if (shownHealth < newValue)
 		{
-			for (int i = shownHealth; i < health.CurrentH; i++)
+			for (; shownHealth < newValue; shownHealth++)
 			{
-				transform.GetChild(i-1).gameObject.SetActive(true);
-				shownHealth++;
+				transform.GetChild(shownHealth - 1).gameObject.SetActive(true);
 			}
-		} else if (shownHealth > health.CurrentH)
+		}
+		else if (shownHealth > newValue)
 		{
-			for (int i = shownHealth; i > health.CurrentH; i--)
+			for (; shownHealth > newValue; shownHealth--)
 			{
-				transform.GetChild(i-1).gameObject.SetActive(false);
-				shownHealth--;
+				transform.GetChild(shownHealth - 1).gameObject.SetActive(false);
 			}
 		}
 	}

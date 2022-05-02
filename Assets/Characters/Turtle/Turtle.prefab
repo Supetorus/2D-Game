@@ -52,6 +52,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
+  fallCheck: {fileID: 8344666408146361276}
+  wallCheck: {fileID: 8344666408195780719}
+  groundcheck: {fileID: 8344666408121930745}
   turnLayerMask:
     serializedVersion: 2
     m_Bits: 65

@@ -946,7 +946,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b62fa8965fd2c428e17bac78774ee7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: {fileID: 7129256204911520793}
 --- !u!1 &5021681717834791310
 GameObject:
   m_ObjectHideFlags: 0
@@ -2323,35 +2322,60 @@ PrefabInstance:
       propertyPath: onDeath.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4717165180179068617, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
---- !u!114 &7129256204911520793 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7975935817744956871, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
-  m_PrefabInstance: {fileID: 882709790902489566}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f5bd78ce307854cbc503705733969a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &489478647 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 882709791257675817, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
-  m_PrefabInstance: {fileID: 882709790902489566}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f71de54880fbc408a94e40bdf4271f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &6755984538513760256 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5873282996112749022, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
   m_PrefabInstance: {fileID: 882709790902489566}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &489478647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 882709791257675817, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
+  m_PrefabInstance: {fileID: 882709790902489566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761731407701568394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f71de54880fbc408a94e40bdf4271f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &6761731407701568394 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5879023815822408276, guid: b9564b9f790417846aa2ec938ddfba7c, type: 3}
+  m_PrefabInstance: {fileID: 882709790902489566}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4416075848152248690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761731407701568394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a72a3a1e639e4444fb8b86830a67de73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 5
+  regenerationRate: 0
+  knockback: 1
+  invincibilityTime: 0.2
+  numberOfLives: {fileID: 0}
+  toDestroyOnDeath: {fileID: 0}
+  destroyTime: 0
+  onTakeDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  onHeal:
+    m_PersistentCalls:
+      m_Calls: []
+  healthData: {fileID: 11400000, guid: a885a5ef3ce3f0f4cae7b8487df0d86d, type: 2}
+  healthUI: {fileID: 3715771055081874319}
 --- !u!1001 &889740036632363432
 PrefabInstance:
   m_ObjectHideFlags: 0

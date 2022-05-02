@@ -22,7 +22,6 @@ public class Health : MonoBehaviour
 	//private LevelManager levelManager;
 	private Animator animator;
 	private Rigidbody2D rigidBody;
-	private CheckpointManager checkpointManager;
 	private bool deathAnimationComplete = false;
 	private Coroutine dieCoroutine;
 	private Coroutine hurtCoroutine;
@@ -31,13 +30,16 @@ public class Health : MonoBehaviour
 	/// <summary>
 	/// The current amount of health this object has.
 	/// </summary>
-	public float CurrentH { get; private set; }
-	private void Awake()
+	public virtual float CurrentH { get; protected set; }
+	protected virtual void Awake()
+	{
+		TryGetComponent(out animator);
+		TryGetComponent(out rigidBody);
+	}
+
+	protected virtual void Start()
 	{
 		CurrentH = maxHealth;
-		TryGetComponent(out animator);
-		TryGetComponent(out checkpointManager);
-		TryGetComponent(out rigidBody);
 	}
 
 	/// <summary>
@@ -46,7 +48,7 @@ public class Health : MonoBehaviour
 	/// <param name="damage">Value greater than or equal to 0.</param>
 	/// <param name="origin">The enemy attack location, used to calculate direction of knockback.</param>
 	/// <param name="knockbackPower">The amount of power in the knockback.</param>
-	public void TakeDamage(float damage, Vector3 origin, float knockbackPower)
+	public virtual void TakeDamage(float damage, Vector3 origin, float knockbackPower)
 	{
 		if (isInvincible) return;
 

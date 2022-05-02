@@ -46,7 +46,7 @@ public class CharacterController2D : MonoBehaviour
 
 	public float life = 10f; //Life of the player
 	public bool invincible = false; //If player can die
-	private bool canMove = true; //If player can move
+	//private bool canMove = true; //If player can move
 
 	private Animator animator;
 	private Health health;
@@ -130,11 +130,11 @@ public class CharacterController2D : MonoBehaviour
 			jumpWallDistX = (jumpWallStartX - transform.position.x) * transform.localScale.x;
 			if (jumpWallDistX < -0.5f && jumpWallDistX > -1f)
 			{
-				canMove = true;
+				//canMove = true;
 			}
 			else if (jumpWallDistX < -1f && jumpWallDistX >= -2f)
 			{
-				canMove = true;
+				//canMove = true;
 				m_Rigidbody2D.velocity = new Vector2(10f * transform.localScale.x, m_Rigidbody2D.velocity.y);
 			}
 			else if (jumpWallDistX < -2f)
@@ -332,7 +332,7 @@ public class CharacterController2D : MonoBehaviour
 				animator.SetBool("IsWallSliding", false);
 				prevWallSliding = false;
 				m_WallCheck.localPosition = new Vector3(Mathf.Abs(m_WallCheck.localPosition.x), m_WallCheck.localPosition.y, 0);
-				canMove = false;
+				//canMove = false;
 			}
 			else if (dash && canDash)
 			{
@@ -412,9 +412,9 @@ public class CharacterController2D : MonoBehaviour
 
 	IEnumerator Stun(float time)
 	{
-		canMove = false;
+		//canMove = false;
 		yield return new WaitForSeconds(time);
-		canMove = true;
+		//canMove = true;
 	}
 	IEnumerator MakeInvincible(float time)
 	{

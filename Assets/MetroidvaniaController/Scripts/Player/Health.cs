@@ -13,7 +13,6 @@ public class Health : MonoBehaviour
 	[SerializeField, Tooltip("The number of lives this object has, if it should respawn.")] IntData numberOfLives;
 	[SerializeField, Tooltip("The object to be destroyed on death. Corpse will stick around if this is undefined.")] GameObject toDestroyOnDeath;
 	[SerializeField, Tooltip("The amount of time to wait before removing the dead body.")] float destroyTime;
-	//[SerializeField, Tooltip("A prefab to place when the object is destroyed.")] GameObject deathPrefab;
 
 	[SerializeField, Tooltip("Events called when object takes damage")] private UnityEvent onTakeDamage;
 	[SerializeField, Tooltip("Events called when object's health goes below 0")] private UnityEvent onDeath;

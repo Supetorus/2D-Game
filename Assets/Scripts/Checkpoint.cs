@@ -15,7 +15,7 @@ public class Checkpoint : MonoBehaviour
 
 	private SpriteRenderer spriteRenderer;
 	private AudioSource audioSource;
-	private bool IsChecked = false;
+	//private bool IsChecked = false;
 
 	private void Awake()
 	{
@@ -30,7 +30,7 @@ public class Checkpoint : MonoBehaviour
 		{
 			spriteRenderer.sprite = checkedSprite;
 			audioSource.Play();
-			IsChecked = true;
+			//IsChecked = true;
 			if (lastCheckpoint != null) lastCheckpoint.Check();
 			checkpointManager.CurrentCheckpoint = this;
 
@@ -39,7 +39,7 @@ public class Checkpoint : MonoBehaviour
 
 	public void Check()
 	{
-		IsChecked = true;
+		//IsChecked = true;
 		spriteRenderer.sprite = checkedSprite;
 	}
 }

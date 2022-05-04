@@ -17,7 +17,8 @@ public class TakingDamage : CharacterMoveState
 
 	public override void UpdateState()
 	{
-		throw new System.NotImplementedException();
+
+		OrientCharacter();
 	}
 
 	public override string ToString()

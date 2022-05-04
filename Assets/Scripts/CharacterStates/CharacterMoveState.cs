@@ -49,6 +49,27 @@ public abstract class CharacterMoveState : MonoBehaviour
 		// Move the character by finding the target velocity
 		Vector3 targetVelocity = new Vector2(c.pi.lateralMovement * speedMultiplier, rb.velocity.y);
 		//And then smoothing it out and applying it to the character
-		rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref c.velocity, c.m_MovementSmoothing);
+		rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref c.velocity, c.movementSmoothing);
+	}
+
+	/// <summary>
+	/// Checks if the player is facing the way they are moving.
+	/// If input is opposite of movement then character is flipped.
+	/// </summary>
+	protected void OrientCharacter()
+	{
+		if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
+		{
+			// If the input is moving the player right and the player is facing left...
+			if (c.pi.lateralMovement > 0.1f && !c.isFacingRight)
+			{
+				Flip();
+			}
+			// Otherwise if the input is moving the player left and the player is facing right...
+			else if (c.pi.lateralMovement < 0.1f && c.isFacingRight)
+			{
+				Flip();
+			}
+		}
 	}
 }

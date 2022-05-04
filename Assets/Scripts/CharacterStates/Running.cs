@@ -14,7 +14,7 @@ public class Running : CharacterMoveState
 
 	public override void FixedUpdateState()
 	{
-		ApplyLateralMovement(c.groundSpeed);
+		ApplyLateralMovement(c.runSpeed);
 	}
 
 	public override void UpdateState()
@@ -54,26 +54,15 @@ public class Running : CharacterMoveState
 			return;
 		}
 
-		// Lateral movement
-		if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
-		{
-			// If the input is moving the player right and the player is facing left...
-			if (c.pi.lateralMovement > 0.1f && !c.isFacingRight)
-			{
-				Flip();
-			}
-			// Otherwise if the input is moving the player left and the player is facing right...
-			else if (c.pi.lateralMovement < 0.1f && c.isFacingRight)
-			{
-				Flip();
-			}
-		}
-		else
+		if (Mathf.Abs(c.pi.lateralMovement) < 0.01f)
 		{
 			c.ChangeState(c.idling);
 			return;
 		}
+
+		OrientCharacter();
 	}
+
 	public override string ToString()
 	{
 		return "Running";

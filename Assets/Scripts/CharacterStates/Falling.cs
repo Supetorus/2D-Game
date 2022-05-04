@@ -19,6 +19,8 @@ public class Falling : CharacterMoveState
 
 	public override void UpdateState()
 	{
+		OrientCharacter();
+
 		// Meleeing
 		if (c.pi.doMelee)
 		{
@@ -33,8 +35,17 @@ public class Falling : CharacterMoveState
 			return;
 		}
 
+		// Jumping
+		if (c.pi.jumpPressed)
+		{
+			c.ChangeState(c.jumping);
+			return;
+		}
+
 		if (c.isGrounded)
 		{
+			c.landingParticles.Play();
+
 			// Crouching
 			if (c.pi.doCrouch)
 			{
@@ -45,14 +56,7 @@ public class Falling : CharacterMoveState
 			// Running
 			if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
 			{
-				c.ChangeState(c.runningOnGround);
-				return;
-			}
-
-			// Jumping
-			if (c.pi.jumpPressed)
-			{
-				c.ChangeState(c.jumping);
+				c.ChangeState(c.running);
 				return;
 			}
 
@@ -61,6 +65,7 @@ public class Falling : CharacterMoveState
 			return;
 		}
 	}
+
 	public override string ToString()
 	{
 		return "Falling";

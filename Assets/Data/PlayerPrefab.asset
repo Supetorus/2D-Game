@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7d830bbb28706844a6dcddee64e6bc9, type: 3}
-  m_Name: PlayerPackage
+  m_Name: PlayerPrefab
   m_EditorClassIdentifier: 
-  prefab: {fileID: 882709790768661429, guid: 48c95c9e5e1a30b4ba440518558ab0e0, type: 3}
+  prefab: {fileID: 5085743745715995743, guid: 101f12a876c52e84b9fde91fb3816d70, type: 3}

@@ -6,31 +6,34 @@ using UnityEngine.UI;
 
 public class CharacterController2D : MonoBehaviour
 {
+
+	[SerializeField, Tooltip("Whether or not a player can steer while jumping")] public bool airControlAllowed = false;
+	[SerializeField, Tooltip("How much force is added when the player jumps off a wall")] public float wallJumpForce = 800f;
+	[SerializeField, Tooltip("How much to smooth out the movement"), Range(0, .3f)] public float movementSmoothing = .05f;
+	[SerializeField, Tooltip("A mask determining what is ground to the character")] public LayerMask groundLayers;
+	[SerializeField, Tooltip("A position marking where to check if the player is grounded.")] public Transform groundCheckPosition;
+	[SerializeField, Tooltip("A mask determining what is ceiling to the character while crouching")] public LayerMask ceilingLayers;
+	[SerializeField, Tooltip("A position to check if the player can stand while crouching")] public Transform crouchBlockCheck;
+	[SerializeField, Tooltip("A mask determining what is wall to the character")] public LayerMask wallLayers;
+	[SerializeField, Tooltip("A position marking where to check if the player is against the wall")] public Transform wallCheckPosition;
+	[SerializeField, Tooltip("The collider(s) used while standing")] public GameObject standingCollider;
+	[SerializeField, Tooltip("The collider(s) used while crouching")] public GameObject crouchingCollider;
+	[SerializeField, Tooltip("How fast the player moves while running")] public float runSpeed = 15f;
+	[SerializeField, Tooltip("How fast the player moves while in the air")] public float airSpeed = 10f;
+	[SerializeField, Tooltip("How fast the player moves while crouching")] public float crouchSpeed = 5f;
+	[SerializeField, Tooltip("How fast to move while dashing")] public float dashspeed = 25f;
+	[SerializeField, Tooltip("If the player is facing right (Check if your sprite's default direction is right")] public bool isFacingRight = true;
+	[SerializeField, Tooltip("Particles used when the player jumps")] public ParticleSystem jumpParticles;
+	[SerializeField, Tooltip("Particles used when the player lands")] public ParticleSystem landingParticles;
+
+	[HideInInspector, Tooltip("Radius of a circle used for the crouch blocked check")] public float ceilingCheckRadius = .15f;
+	[HideInInspector, Tooltip("Radius of a circle used for the ground check")] public float groundCheckRadius = .15f;
+	[HideInInspector, Tooltip("Radius of a circle used for the wall check")] public float wallCheckRadius = .15f;
+
+
 	public Text debugText;
-
-	[SerializeField, Tooltip("Amount of horizontal force added when the player jumps off a wall.")] public float m_WallJumpForce = 800f;
-	[SerializeField] public float m_DashForce = 25f;
-	[SerializeField, Tooltip("How fast the player moves while crouching. 1 = 100%.")] public float m_CrouchSpeed = 0.5f;
-	[Range(0, .3f)] [SerializeField] public float m_MovementSmoothing = .05f;  // How much to smooth out the movement
-	[SerializeField] public bool airControlAllowed = false;                         // Whether or not a player can steer while jumping;
-	[SerializeField] public LayerMask groundLayers;                          // A mask determining what is ground to the character
-	[SerializeField] public LayerMask ceilingLayers;                          // A mask determining what is ground to the character
-	[SerializeField] public LayerMask wallLayers;                          // A mask determining what is ground to the character
-	[SerializeField] public Transform groundCheckPosition;                           // A position marking where to check if the player is grounded.
-	[SerializeField] public Transform wallCheckPosition;                             //Posicion que controla si el personaje toca una pared
-	[SerializeField] public Transform ceilingCheckPosition;                          //Position to check for ceiling.
-	[SerializeField] public CapsuleCollider2D m_CrouchDisableCollider;         // The collider disabled by crouching.
-	[SerializeField] public CapsuleCollider2D m_CrouchEnableCollider;          // The collider enabled by crouching.
-	public float groundSpeed = 15f;
-	public float airSpeed = 10f;
-
-	public float ceilingCheckRadius = .15f; // Radius of the overlap circle to determine if under ceiling.
-	public float groundCheckRadius = .15f; // Radius of the overlap circle to determine if grounded
-	public float wallCheckRadius = .15f; // Radius of the overlap circle to determine if touching the wall.
-	public bool isFacingRight = true;  // For determining which way the player is currently facing.
-	public Vector3 velocity = Vector3.zero;
-	public float limitFallSpeed = 25f; // Limit fall speed
-	[HideInInspector] public float prevGravityScale;
+	//[SerializeField, Tooltip("")] public float limitFallSpeed = 25f; // Limit fall speed
+	//[HideInInspector] public float prevGravityScale;
 
 	[HideInInspector] public bool wasCrouchCeiling; // If the ceiling check was true last fixed update frame;
 	[HideInInspector] public bool wasGrounded; // If the ground check was true last fixed update frame;
@@ -39,13 +42,16 @@ public class CharacterController2D : MonoBehaviour
 	[HideInInspector] public bool wallPressing = false;
 	[HideInInspector] public bool isGrounded;            // Whether or not the player is grounded.
 	[HideInInspector] public bool isWall; //If there is a wall in front of the player
-	[HideInInspector] public bool isCrouchCeiling; //If there is a ceiling in the player's headspace.
+	[HideInInspector] public bool isCrouchBlocked; //If there is a ceiling in the player's headspace.
 
 	[HideInInspector] public bool canDash = true;
 	[HideInInspector] public bool isDashing = false; //If player is dashing
 	[HideInInspector] public bool isWallSliding = false; //If player is sliding in a wall
-	[HideInInspector] public bool prevWallSliding = false; //If player is sliding in a wall in the previous frame
-														   //private float prevVelocityX = 0f;
+	[HideInInspector] public bool prevWallSliding = false; //If player is sliding on a wall in the previous frame
+	[HideInInspector] public bool canDoubleJump = true; //If the player can jump again while in air.
+	[HideInInspector] public float secondJumpMultiplierWhileAscending = 0.6f; // The amount of impulse force an air jump will have compared to regular jump
+	[HideInInspector] public float secondJumpMultiplierWhileDescending = 2f; // The amount of impulse force an air jump will have compared to regular jump. It seems the player needs more if they are falling.
+
 	[HideInInspector] public bool canCheck = false; //For check if player is wallsliding
 	[HideInInspector] public bool m_wasCrouching = false; // If the player was crouching last frame.
 	[HideInInspector] public bool timeLockedCrouching = false; // If the player is locked crouching because of cooldown.
@@ -54,9 +60,7 @@ public class CharacterController2D : MonoBehaviour
 	[HideInInspector] public float jumpWallDistX = 0; //Distance between player and wall
 	[HideInInspector] public bool limitVelOnWallJump = false; //For limit wall jump distance with low fps
 
-
-	public ParticleSystem particleJumpUp; //Trail particles
-	public ParticleSystem particleJumpDown; //Explosion particles
+	[HideInInspector] public Vector3 velocity = Vector3.zero;
 
 	[Header("Events")]
 	[Space]
@@ -74,6 +78,16 @@ public class CharacterController2D : MonoBehaviour
 		[HideInInspector] public bool doDash;
 		[HideInInspector] public bool doCrouch;
 		[HideInInspector] public bool doMelee;
+
+		public void Update()
+		{
+			lateralMovement = Input.GetAxisRaw("Horizontal");
+			jumpPressed = Input.GetKeyDown(KeyCode.Z);
+			jumpHeld = Input.GetKey(KeyCode.Z);
+			doDash = Input.GetKey(KeyCode.C);
+			doCrouch = Input.GetKey(KeyCode.DownArrow);
+			doMelee = Input.GetKeyDown(KeyCode.X);
+		}
 	}
 
 	public PlayerInput pi;
@@ -88,7 +102,7 @@ public class CharacterController2D : MonoBehaviour
 	[HideInInspector] public TakingDamage takingDamage;
 	[HideInInspector] public Dead dead;
 	[HideInInspector] public WallSliding wallSliding;
-	[HideInInspector] public Running runningOnGround;
+	[HideInInspector] public Running running;
 
 	[System.Serializable]
 	public class BoolEvent : UnityEvent<bool> { }
@@ -115,7 +129,10 @@ public class CharacterController2D : MonoBehaviour
 		takingDamage = GetComponent<TakingDamage>();
 		dead = GetComponent<Dead>();
 		wallSliding = GetComponent<WallSliding>();
-		runningOnGround = GetComponent<Running>();
+		running = GetComponent<Running>();
+
+		standingCollider.SetActive(true);
+		crouchingCollider.SetActive(false);
 	}
 
 	private void Start()
@@ -128,12 +145,7 @@ public class CharacterController2D : MonoBehaviour
 		debugText.text = "State: " + CurrentMState.ToString();
 
 		// Get player input
-		pi.lateralMovement = Input.GetAxisRaw("Horizontal");
-		pi.jumpPressed = Input.GetKeyDown(KeyCode.Z);
-		pi.jumpHeld = Input.GetKey(KeyCode.Z);
-		pi.doDash = Input.GetKey(KeyCode.C);
-		pi.doCrouch = Input.GetKey(KeyCode.DownArrow);
-		pi.doMelee = Input.GetKeyDown(KeyCode.X);
+		pi.Update();
 		wallPressing = !isGrounded && ((pi.lateralMovement < 0.01f && !isFacingRight) || (pi.lateralMovement > 0.01f && isFacingRight)); // Not grounded and pressing toward the wall.
 
 		// Update state
@@ -156,11 +168,11 @@ public class CharacterController2D : MonoBehaviour
 			if (col.gameObject != gameObject) { isWall = true; break; }
 		}
 
-		wasCrouchCeiling = isCrouchCeiling;
-		isWall = false;
-		foreach (var col in Physics2D.OverlapCircleAll(ceilingCheckPosition.position, ceilingCheckRadius, ceilingLayers))
+		wasCrouchCeiling = isCrouchBlocked;
+		isCrouchBlocked = false;
+		foreach (var col in Physics2D.OverlapCircleAll(crouchBlockCheck.position, ceilingCheckRadius, ceilingLayers))
 		{
-			if (col.gameObject != gameObject) { isWall = true; break; }
+			if (col.gameObject != gameObject) { isCrouchBlocked = true; break; }
 		}
 
 		CurrentMState.FixedUpdateState();
@@ -168,7 +180,7 @@ public class CharacterController2D : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		Gizmos.DrawWireSphere(ceilingCheckPosition.position, ceilingCheckRadius);
+		Gizmos.DrawWireSphere(crouchBlockCheck.position, ceilingCheckRadius);
 		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
 		Gizmos.DrawWireSphere(wallCheckPosition.position, wallCheckRadius);
 	}

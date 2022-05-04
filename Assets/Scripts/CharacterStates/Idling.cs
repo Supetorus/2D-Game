@@ -36,7 +36,7 @@ public class Idling : CharacterMoveState
 		// Run
 		if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
 		{
-			c.ChangeState(c.runningOnGround);
+			c.ChangeState(c.running);
 			return;
 		}
 

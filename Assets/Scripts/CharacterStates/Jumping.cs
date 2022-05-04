@@ -16,14 +16,16 @@ public class Jumping : CharacterMoveState
 
 	public override void EnterState()
 	{
-		jumpTime = 0;
-		jumpCanceled = false;
-		c.isGrounded = false;
-		animator.Play("Jump");
-		//floatForce = maxJumpForce;
-		rb.AddForce(new Vector2(0f, impulseJumpForceY), ForceMode2D.Impulse);
-
-		StartCoroutine(GroundCheckTimer());
+		if (c.isGrounded)
+		{
+			c.canDoubleJump = true;
+			Jump(1f);
+		}
+		else
+		{
+			c.canDoubleJump = false;
+			Jump(c.secondJumpMultiplierWhileDescending); // Code can only get here from falling.
+		}
 	}
 
 	IEnumerator GroundCheckTimer()
@@ -68,12 +70,19 @@ public class Jumping : CharacterMoveState
 			return;
 		}
 
+		// Jumping (double jump)
+		if (c.canDoubleJump && c.pi.jumpPressed)
+		{
+			c.canDoubleJump = false;
+			Jump(c.secondJumpMultiplierWhileAscending);
+		}
+
 		if (canCheckGround && c.isGrounded)
 		{
 			// Running
 			if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
 			{
-				c.ChangeState(c.runningOnGround);
+				c.ChangeState(c.running);
 				return;
 			}
 			// Idling
@@ -99,7 +108,21 @@ public class Jumping : CharacterMoveState
 		}
 
 		if (!c.pi.jumpHeld) jumpCanceled = true;
+		OrientCharacter();
 	}
+
+	private void Jump(float forceMultiplier)
+	{
+		jumpTime = 0;
+		jumpCanceled = false;
+		c.isGrounded = false;
+		animator.Play("Jump");
+		c.jumpParticles.Play();
+		rb.AddForce(new Vector2(0f, impulseJumpForceY * forceMultiplier), ForceMode2D.Impulse);
+
+		StartCoroutine(GroundCheckTimer());
+	}
+
 	public override string ToString()
 	{
 		return "Jumping";

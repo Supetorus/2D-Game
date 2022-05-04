@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-	[SerializeField] CharacterController2D characterController;
+	[SerializeField] oldController characterController;
 	[SerializeField] Animator animator;
 	[SerializeField] float speed;
 

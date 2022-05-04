@@ -117,16 +117,12 @@ GameObject:
   m_Component:
   - component: {fileID: 5873282996112749022}
   - component: {fileID: 5766662942222115446}
-  - component: {fileID: 5765759660492643808}
+  - component: {fileID: 5896337319542687865}
   - component: {fileID: 5766611385843884536}
   - component: {fileID: 6009554051768386298}
   - component: {fileID: 5820446531683511608}
   - component: {fileID: 5847602125299312164}
   - component: {fileID: 5866141454112666384}
-  - component: {fileID: 5816197955243271004}
-  - component: {fileID: 4717165180179068617}
-  - component: {fileID: 882709791257675817}
-  - component: {fileID: 6162322349702616155}
   m_Layer: 1
   m_Name: Player
   m_TagString: Player
@@ -167,27 +163,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783f8b7882d2d2a42a5b76de9179978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxJumpForce: 60
+--- !u!114 &5896337319542687865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5879023815822408276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1defcb8274f788b47a11f7467e62c0de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxJumpForce: 400
   m_ImpulseJumpForceY: 10
   m_WallJumpForce: 20
+  m_DashForce: 25
   m_CrouchSpeed: 0.5
   m_MovementSmoothing: 0.05
-  m_AirControl: 1
-  m_WhatIsGround:
+  m_AirControl: 0
+  groundLayers:
     serializedVersion: 2
-    m_Bits: 9
-  m_GroundCheck: {fileID: 5881040141255407324}
-  m_WallCheck: {fileID: 5873589596261770592}
-  m_CeilingCheck: {fileID: 4076128482905389017}
+    m_Bits: 0
+  ceilingLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  wallLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckPosition: {fileID: 0}
+  wallCheckPosition: {fileID: 0}
+  ceilingCheckPosition: {fileID: 0}
   m_CrouchDisableCollider: {fileID: 5866141454112666384}
   m_CrouchEnableCollider: {fileID: 6105984389553484431}
-  AirTime: 0.5
-  canDoubleJump: 0
-  m_DashForce: 25
-  life: 10
-  invincible: 0
-  particleJumpUp: {fileID: 6004171828554090980}
-  particleJumpDown: {fileID: 6003375391351421774}
+  ceilingCheckRadius: 0.15
+  groundCheckRadius: 0.15
+  m_FacingRight: 1
+  velocity: {x: 0, y: 0, z: 0}
+  limitFallSpeed: 25
+  m_FloatForce: 0
+  AirTime: 1
+  m_JumpTime: 0
+  prevGravityScale: 0
+  wasCrouchCeiling: 0
+  wasGrounded: 0
+  wasWall: 0
+  isGrounded: 0
+  isWall: 0
+  isCrouchCeiling: 0
+  canDoubleJump: 1
+  canDash: 1
+  isDashing: 0
+  isWallSliding: 0
+  prevWallSliding: 0
+  canCheck: 0
+  jumpCanceled: 0
+  m_wasCrouching: 0
+  timeLockedCrouching: 0
+  jumpWallStartX: 0
+  jumpWallDistX: 0
+  limitVelOnWallJump: 0
+  particleJumpUp: {fileID: 0}
+  particleJumpDown: {fileID: 0}
   OnFallEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -197,28 +234,20 @@ MonoBehaviour:
   OnCrouchEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5765759660492643808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023815822408276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9955788a5eaffa49a9297f38eaa6202, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 1
-  knockback: 200
-  enemyLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  attackCheck: {fileID: 5880890297669303064}
-  attackRadius: 0.8
-  throwableObject: {fileID: 0}
-  animator: {fileID: 5820446531683511608}
-  canAttack: 1
+  lateralMovement: 0
+  jumpPressed: 0
+  jumpHeld: 0
+  dash: 0
+  crouch: 0
+  idle: {fileID: 0}
+  crouching: {fileID: 0}
+  jumping: {fileID: 0}
+  falling: {fileID: 0}
+  meleeing: {fileID: 0}
+  dashing: {fileID: 0}
+  takingDamage: {fileID: 0}
+  dead: {fileID: 0}
+  wallSliding: {fileID: 0}
 --- !u!114 &5766611385843884536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,158 +370,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -0.06}
   m_Size: {x: 0.38503265, y: 0.88}
   m_Direction: 0
---- !u!82 &5816197955243271004
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023815822408276}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
---- !u!114 &4717165180179068617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023815822408276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a72a3a1e639e4444fb8b86830a67de73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 0
-  regenerationRate: 0
-  knockback: 1
-  invincibilityTime: 0.4
-  numberOfLives: {fileID: 11400000, guid: d76fe2faf8a3f7c4ea7a5025b24784e7, type: 2}
-  toDestroyOnDeath: {fileID: 0}
-  destroyTime: 0
-  onTakeDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
-  onHeal:
-    m_PersistentCalls:
-      m_Calls: []
-  healthData: {fileID: 0}
---- !u!114 &882709791257675817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023815822408276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f71de54880fbc408a94e40bdf4271f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  respawnPrefab: {fileID: 11400000, guid: 89a9409d135361845a2cee12078c1148, type: 2}
-  lives: {fileID: 0}
---- !u!114 &6162322349702616155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023815822408276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82f8409f7e7a4a048853599434dbe774, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryUI: {fileID: 0}
 --- !u!1 &5879051081951920418
 GameObject:
   m_ObjectHideFlags: 0

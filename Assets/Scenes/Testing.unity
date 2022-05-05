@@ -123,17 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &102136976 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3404920881913780262, guid: 101f12a876c52e84b9fde91fb3816d70, type: 3}
-  m_PrefabInstance: {fileID: 3404920881813759158}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0b62fa8965fd2c428e17bac78774ee7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &269706126
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,11 +167,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &891059025 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5085743745715995743, guid: 101f12a876c52e84b9fde91fb3816d70, type: 3}
-  m_PrefabInstance: {fileID: 3404920881813759158}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &994106766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3637,38 +3621,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 101f12a876c52e84b9fde91fb3816d70, type: 3}
---- !u!1 &5879023817488462104 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9139712962983122350, guid: 101f12a876c52e84b9fde91fb3816d70, type: 3}
-  m_PrefabInstance: {fileID: 3404920881813759158}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5879023817488462110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5879023817488462104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a72a3a1e639e4444fb8b86830a67de73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 0
-  regenerationRate: 0
-  knockback: 1
-  invincibilityTime: 0.2
-  numberOfLives: {fileID: 11400000, guid: d76fe2faf8a3f7c4ea7a5025b24784e7, type: 2}
-  toDestroyOnDeath: {fileID: 891059025}
-  destroyTime: 0
-  onTakeDamage:
-    m_PersistentCalls:
-      m_Calls: []
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
-  onHeal:
-    m_PersistentCalls:
-      m_Calls: []
-  healthData: {fileID: 11400000, guid: a885a5ef3ce3f0f4cae7b8487df0d86d, type: 2}
-  healthUI: {fileID: 102136976}

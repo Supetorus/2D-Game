@@ -17,9 +17,8 @@ public class Dashing : CharacterMoveState
 
 	public override void UpdateState()
 	{
-
-		OrientCharacter();
 	}
+
 	public override string ToString()
 	{
 		return "Dashing";

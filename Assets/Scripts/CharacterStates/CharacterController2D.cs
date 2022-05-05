@@ -7,33 +7,54 @@ using UnityEngine.UI;
 public class CharacterController2D : MonoBehaviour
 {
 
-	[SerializeField, Tooltip("Whether or not a player can steer while jumping")] public bool airControlAllowed = false;
-	[SerializeField, Tooltip("How much force is added when the player jumps off a wall")] public float wallJumpForce = 800f;
-	[SerializeField, Tooltip("How much to smooth out the movement"), Range(0, .3f)] public float movementSmoothing = .05f;
-	[SerializeField, Tooltip("A mask determining what is ground to the character")] public LayerMask groundLayers;
-	[SerializeField, Tooltip("A position marking where to check if the player is grounded.")] public Transform groundCheckPosition;
-	[SerializeField, Tooltip("A mask determining what is ceiling to the character while crouching")] public LayerMask ceilingLayers;
-	[SerializeField, Tooltip("A position to check if the player can stand while crouching")] public Transform crouchBlockCheck;
-	[SerializeField, Tooltip("A mask determining what is wall to the character")] public LayerMask wallLayers;
-	[SerializeField, Tooltip("A position marking where to check if the player is against the wall")] public Transform wallCheckPosition;
-	[SerializeField, Tooltip("The collider(s) used while standing")] public GameObject standingCollider;
-	[SerializeField, Tooltip("The collider(s) used while crouching")] public GameObject crouchingCollider;
-	[SerializeField, Tooltip("How fast the player moves while running")] public float runSpeed = 15f;
-	[SerializeField, Tooltip("How fast the player moves while in the air")] public float airSpeed = 10f;
-	[SerializeField, Tooltip("How fast the player moves while crouching")] public float crouchSpeed = 5f;
-	[SerializeField, Tooltip("How fast to move while dashing")] public float dashspeed = 25f;
-	[SerializeField, Tooltip("If the player is facing right (Check if your sprite's default direction is right")] public bool isFacingRight = true;
-	[SerializeField, Tooltip("Particles used when the player jumps")] public ParticleSystem jumpParticles;
-	[SerializeField, Tooltip("Particles used when the player lands")] public ParticleSystem landingParticles;
+	[SerializeField, Tooltip("Whether or not a player can steer while jumping")]
+	public bool airControlAllowed = false;
+	[SerializeField, Tooltip("How much force is added when the player jumps off a wall")]
+	public float wallJumpForce = 800f;
+	[SerializeField, Tooltip("How much to smooth out the movement"), Range(0, .3f)]
+	public float movementSmoothing = .05f;
+	[SerializeField, Tooltip("A mask determining what is ground to the character")]
+	public LayerMask groundLayers;
+	[SerializeField, Tooltip("A position marking where to check if the player is grounded.")]
+	public Transform groundCheckPosition1;
+	[SerializeField, Tooltip("A position marking where to check if the player is grounded.")]
+	public Transform groundCheckPosition2;
+	[SerializeField, Tooltip("A position marking where to check if the player is grounded.")] 
+	public Transform groundCheckPosition3;
+	[SerializeField, Tooltip("A mask determining what is ceiling to the character while crouching")] 
+	public LayerMask ceilingLayers;
+	[SerializeField, Tooltip("A position to check if the player can stand while crouching")] 
+	public Transform crouchBlockCheck;
+	[SerializeField, Tooltip("A mask determining what is wall to the character")] 
+	public LayerMask wallLayers;
+	[SerializeField, Tooltip("A position marking where to check if the player is against the wall")] 
+	public Transform wallCheckPosition;
+	[SerializeField, Tooltip("The collider(s) used while standing")] 
+	public GameObject standingCollider;
+	[SerializeField, Tooltip("The collider(s) used while crouching")] 
+	public GameObject crouchingCollider;
+	[SerializeField, Tooltip("How fast the player moves while running")] 
+	public float runSpeed = 15f;
+	[SerializeField, Tooltip("How fast the player moves while in the air")] 
+	public float airSpeed = 10f;
+	[SerializeField, Tooltip("How fast the player moves while crouching")] 
+	public float crouchSpeed = 5f;
+	[SerializeField, Tooltip("How fast to move while dashing")] 
+	public float dashspeed = 25f;
+	[SerializeField, Tooltip("If the player is facing right (Check if your sprite's default direction is right")] 
+	public bool isFacingRight = true;
+	[SerializeField, Tooltip("Particles used when the player jumps")] 
+	public ParticleSystem jumpParticles;
+	[SerializeField, Tooltip("Particles used when the player lands")] 
+	public ParticleSystem landingParticles;
 
-	[HideInInspector, Tooltip("Radius of a circle used for the crouch blocked check")] public float ceilingCheckRadius = .15f;
-	[HideInInspector, Tooltip("Radius of a circle used for the ground check")] public float groundCheckRadius = .15f;
-	[HideInInspector, Tooltip("Radius of a circle used for the wall check")] public float wallCheckRadius = .15f;
+	// Radius of the circle used to check if character is crouch blocked.
+	[HideInInspector] public float ceilingCheckRadius = .15f;
+	// Radius of the circle used to check if character is against the wall.
+	[HideInInspector] public float wallCheckRadius = .15f;
 
 
 	public Text debugText;
-	//[SerializeField, Tooltip("")] public float limitFallSpeed = 25f; // Limit fall speed
-	//[HideInInspector] public float prevGravityScale;
 
 	[HideInInspector] public bool wasCrouchCeiling; // If the ceiling check was true last fixed update frame;
 	[HideInInspector] public bool wasGrounded; // If the ground check was true last fixed update frame;
@@ -49,12 +70,15 @@ public class CharacterController2D : MonoBehaviour
 	[HideInInspector] public bool isWallSliding = false; //If player is sliding in a wall
 	[HideInInspector] public bool prevWallSliding = false; //If player is sliding on a wall in the previous frame
 	[HideInInspector] public bool canDoubleJump = true; //If the player can jump again while in air.
-	[HideInInspector] public float secondJumpMultiplierWhileAscending = 0.6f; // The amount of impulse force an air jump will have compared to regular jump
-	[HideInInspector] public float secondJumpMultiplierWhileDescending = 2f; // The amount of impulse force an air jump will have compared to regular jump. It seems the player needs more if they are falling.
+	[SerializeField] public float secondJumpMultiplier = 0.8f; // The amount of impulse force an air jump will have compared to regular jump
+	//[HideInInspector] public float sjm = 0.9f;
 
 	[HideInInspector] public bool canCheck = false; //For check if player is wallsliding
 	[HideInInspector] public bool m_wasCrouching = false; // If the player was crouching last frame.
 	[HideInInspector] public bool timeLockedCrouching = false; // If the player is locked crouching because of cooldown.
+
+	[HideInInspector] public bool wasMoving = false;
+	[HideInInspector] public bool isMoving = false;
 
 	[HideInInspector] public float jumpWallStartX = 0;
 	[HideInInspector] public float jumpWallDistX = 0; //Distance between player and wall
@@ -69,7 +93,7 @@ public class CharacterController2D : MonoBehaviour
 	public UnityEvent OnLandEvent;
 	public BoolEvent OnCrouchEvent;
 
-		//Player input status
+	//Player input status
 	public struct PlayerInput
 	{
 		[HideInInspector] public float lateralMovement;
@@ -146,7 +170,9 @@ public class CharacterController2D : MonoBehaviour
 
 		// Get player input
 		pi.Update();
-		wallPressing = !isGrounded && ((pi.lateralMovement < 0.01f && !isFacingRight) || (pi.lateralMovement > 0.01f && isFacingRight)); // Not grounded and pressing toward the wall.
+		wasMoving = isMoving;
+		isMoving = Mathf.Abs(pi.lateralMovement) > 0.01f;
+		wallPressing = !isGrounded && Mathf.Abs(pi.lateralMovement) > 0.01f && isWall; // Not grounded and pressing toward the wall.
 
 		// Update state
 		CurrentMState.UpdateState();
@@ -154,12 +180,28 @@ public class CharacterController2D : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		// check if isGrounded
 		wasGrounded = isGrounded;
 		isGrounded = false;
-		foreach (var col in Physics2D.OverlapCircleAll(groundCheckPosition.position, groundCheckRadius, groundLayers))
+		var hits = Physics2D.RaycastAll(transform.position, groundCheckPosition1.position - transform.position, (transform.position - groundCheckPosition1.position).magnitude, groundLayers);
+		foreach (var col in hits)
 		{
-			if (col.gameObject != gameObject) { isGrounded = true; break; }
+			if (col.transform.gameObject != gameObject) { isGrounded = true; break; }
 		}
+		hits = Physics2D.RaycastAll(transform.position, groundCheckPosition2.position - transform.position, (transform.position - groundCheckPosition2.position).magnitude, groundLayers);
+		foreach (var col in hits)
+		{
+			if (col.transform.gameObject != gameObject) { isGrounded = true; break; }
+		}
+
+		hits = Physics2D.RaycastAll(transform.position, groundCheckPosition3.position - transform.position, (transform.position - groundCheckPosition3.position).magnitude, groundLayers);
+		foreach (var col in hits)
+		{
+			if (col.transform.gameObject != gameObject) { isGrounded = true; break; }
+		}
+
+
+
 
 		wasWall = isWall;
 		isWall = false;
@@ -181,7 +223,10 @@ public class CharacterController2D : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		Gizmos.DrawWireSphere(crouchBlockCheck.position, ceilingCheckRadius);
-		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
 		Gizmos.DrawWireSphere(wallCheckPosition.position, wallCheckRadius);
+
+		Gizmos.DrawLine(transform.position, groundCheckPosition1.position);
+		Gizmos.DrawLine(transform.position, groundCheckPosition2.position);
+		Gizmos.DrawLine(transform.position, groundCheckPosition3.position);
 	}
 }

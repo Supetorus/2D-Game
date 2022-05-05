@@ -1,23 +1,27 @@
+using UnityEngine;
+
 public class WallSliding : CharacterMoveState
 {
 	public override void EnterState()
 	{
-		throw new System.NotImplementedException();
+		if (rb.velocity.y > 0) rb.velocity = new Vector2(rb.velocity.x, 0);
+		OrientCharacter();
+		animator.Play("WallSliding");
 	}
 
 	public override void ExitState()
 	{
-		throw new System.NotImplementedException();
+		
 	}
 
 	public override void FixedUpdateState()
 	{
-		throw new System.NotImplementedException();
+		
 	}
 
 	public override void UpdateState()
 	{
-		throw new System.NotImplementedException();
+		base.UpdateState();
 	}
 
 	public override string ToString()

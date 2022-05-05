@@ -11,6 +11,9 @@ public abstract class CharacterMoveState : MonoBehaviour
 	[HideInInspector] protected CharacterController2D c;
 	[HideInInspector] protected oldController controller;
 
+	protected bool canCheckGround = true; // Can't check if grounded immediately after jumping, need to wait until
+										  // they have had a chance to leave the ground.
+
 	protected void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
@@ -23,7 +26,73 @@ public abstract class CharacterMoveState : MonoBehaviour
 	public abstract void EnterState();
 	public abstract void ExitState();
 	public abstract void FixedUpdateState();
-	public abstract void UpdateState();
+	public virtual void UpdateState()
+	{
+		OrientCharacter();
+
+		// Crouch blocked crouching
+		if (c.isCrouchBlocked)
+		{
+			c.ChangeState(c.crouching);
+			return;
+		}
+
+		// Meleeing
+		if (c.pi.doMelee)
+		{
+			c.ChangeState(c.meleeing);
+			return;
+		}
+
+		// Dashing
+		if (c.pi.doDash)
+		{
+			c.ChangeState(c.dashing);
+			return;
+		}
+
+		// Jumping
+		if ((c.isGrounded || c.canDoubleJump) && c.pi.jumpPressed)
+		{
+			c.ChangeState(c.jumping);
+			return;
+		}
+
+		if (canCheckGround && c.isGrounded)
+		{
+			// Crouching
+			if (c.pi.doCrouch)
+			{
+				c.ChangeState(c.crouching);
+				return;
+			}
+
+			// Running
+			if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
+			{
+				c.ChangeState(c.running);
+				return;
+			}
+
+			// Idling
+			c.ChangeState(c.idling);
+			return;
+		}
+
+		// Wall Sliding
+		if (!c.isGrounded && c.wallPressing)
+		{
+			c.ChangeState(c.wallSliding);
+			return;
+		}
+
+		// Falling
+		if (!c.isGrounded && rb.velocity.y < 0)
+		{
+			c.ChangeState(c.falling);
+			return;
+		}
+	}
 
 	/// <summary>
 	/// Flip the player sprite horizontally

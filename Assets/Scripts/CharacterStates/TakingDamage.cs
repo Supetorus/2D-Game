@@ -18,7 +18,6 @@ public class TakingDamage : CharacterMoveState
 	public override void UpdateState()
 	{
 
-		OrientCharacter();
 	}
 
 	public override string ToString()

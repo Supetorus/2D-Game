@@ -43,52 +43,6 @@ public class Crouching : CharacterMoveState
 			animator.Play("Crouched");
 		}
 		base.UpdateState();
-		//// Falling
-		//if (!c.isGrounded)
-		//{
-		//	c.ChangeState(c.falling);
-		//	return;
-		//}
-
-		//// Only check for standing actions if standing is possible.
-		//if (!c.isCrouchBlocked)
-		//{
-		//	// Meleeing
-		//	if (c.pi.doMelee)
-		//	{
-		//		c.ChangeState(c.meleeing);
-		//		return;
-		//	}
-
-		//	// Dashing
-		//	if (c.pi.doDash)
-		//	{
-		//		c.ChangeState(c.dashing);
-		//		return;
-		//	}
-
-		//	// Jumping
-		//	if (c.pi.jumpPressed)
-		//	{
-		//		c.ChangeState(c.jumping);
-		//		return;
-		//	}
-
-		//	// Running
-		//	if (!c.pi.doCrouch && isMoving)
-		//	{
-		//		c.ChangeState(c.running);
-		//		return;
-		//	}
-
-		//	// Idling
-		//	if (!c.pi.doCrouch && !isMoving)
-		//	{
-		//		c.ChangeState(c.idling);
-		//		return;
-		//	}
-		//}
-
 	}
 
 	public override string ToString()

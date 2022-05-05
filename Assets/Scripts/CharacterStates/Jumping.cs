@@ -58,59 +58,12 @@ public class Jumping : CharacterMoveState
 	public override void UpdateState()
 	{
 		if (!c.pi.jumpHeld) jumpCanceled = true;
+		if (c.pi.jumpPressed)
+		{
+			AirJump();
+			return;
+		}
 		base.UpdateState();
-
-		//// Melee
-		//if (c.pi.doMelee)
-		//{
-		//	c.ChangeState(c.meleeing);
-		//	return;
-		//}
-
-		//// Dashing
-		//if (c.pi.doDash)
-		//{
-		//	c.ChangeState(c.dashing);
-		//	return;
-		//}
-
-		//// Jumping (double jump)
-		//if (c.canDoubleJump && c.pi.jumpPressed)
-		//{
-		//	AirJump();
-		//}
-
-		//if (canCheckGround && c.isGrounded)
-		//{
-		//	// Running
-		//	if (Mathf.Abs(c.pi.lateralMovement) > 0.01f)
-		//	{
-		//		c.ChangeState(c.running);
-		//		return;
-		//	}
-		//	// Idling
-		//	else
-		//	{
-		//		c.ChangeState(c.idling);
-		//		return;
-		//	}
-		//}
-
-		//// WallSliding
-		//if (c.wallPressing)
-		//{
-		//	c.ChangeState(c.wallSliding);
-		//	return;
-		//}
-
-		//// Falling
-		//if (rb.velocity.y < 0)
-		//{
-		//	c.ChangeState(c.falling);
-		//	return;
-		//}
-
-		//OrientCharacter();
 	}
 
 	private void Jump(float forceMultiplier)

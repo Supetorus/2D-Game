@@ -61,7 +61,7 @@ public abstract class CharacterMoveState : MonoBehaviour
 		if (canCheckGround && c.isGrounded)
 		{
 			// Crouching
-			if (c.pi.doCrouch)
+			if (c.pi.down)
 			{
 				c.ChangeState(c.crouching);
 				return;
@@ -80,7 +80,7 @@ public abstract class CharacterMoveState : MonoBehaviour
 		}
 
 		// Wall Sliding
-		if (!c.isGrounded && c.wallPressing)
+		if (!c.isGrounded && c.wallPressing && rb.velocity.y <= 0)
 		{
 			c.ChangeState(c.wallSliding);
 			return;

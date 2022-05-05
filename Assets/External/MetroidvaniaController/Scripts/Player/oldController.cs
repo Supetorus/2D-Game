@@ -245,12 +245,12 @@ public class oldController : MonoBehaviour
 	//	c.canDash = true;
 	//}
 
-	IEnumerator WaitToCheck(float time)
-	{
-		c.canCheck = false;
-		yield return new WaitForSeconds(time);
-		c.canCheck = true;
-	}
+	//IEnumerator WaitToCheck(float time)
+	//{
+	//	c.canCheck = false;
+	//	yield return new WaitForSeconds(time);
+	//	c.canCheck = true;
+	//}
 
 	//IEnumerator WaitToEndSliding()
 	//{

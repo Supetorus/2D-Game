@@ -7,16 +7,6 @@ public class Idling : CharacterMoveState
 		animator.Play("Idling");
 	}
 
-	public override void ExitState()
-	{
-
-	}
-
-	public override void FixedUpdateState()
-	{
-
-	}
-
 	public override string ToString()
 	{
 		return "Idling";

@@ -23,9 +23,9 @@ public abstract class CharacterMoveState : MonoBehaviour
 		controller = GetComponent<oldController>();
 	}
 
-	public abstract void EnterState();
-	public abstract void ExitState();
-	public abstract void FixedUpdateState();
+	public virtual void EnterState() { }
+	public virtual void ExitState() { }
+	public virtual void FixedUpdateState() { }
 	public virtual void UpdateState()
 	{
 		OrientCharacter();
@@ -45,14 +45,14 @@ public abstract class CharacterMoveState : MonoBehaviour
 		}
 
 		// Dashing
-		if (c.pi.doDash)
+		if ((c.isGrounded || c.canAirDash) && c.pi.dashPressed)
 		{
 			c.ChangeState(c.dashing);
 			return;
 		}
 
 		// Jumping
-		if ((c.isGrounded || c.canDoubleJump) && c.pi.jumpPressed)
+		if ((c.isGrounded || c.canAirJump) && c.pi.jumpPressed)
 		{
 			c.ChangeState(c.jumping);
 			return;
@@ -61,7 +61,7 @@ public abstract class CharacterMoveState : MonoBehaviour
 		if (canCheckGround && c.isGrounded)
 		{
 			// Crouching
-			if (c.pi.down)
+			if (c.pi.downHeld || c.pi.downPressed)
 			{
 				c.ChangeState(c.crouching);
 				return;

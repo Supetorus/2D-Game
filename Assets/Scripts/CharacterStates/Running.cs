@@ -7,11 +7,6 @@ public class Running : CharacterMoveState
 		animator.Play("Running");
 	}
 
-	public override void ExitState()
-	{
-
-	}
-
 	public override void FixedUpdateState()
 	{
 		ApplyLateralMovement(c.runSpeed);

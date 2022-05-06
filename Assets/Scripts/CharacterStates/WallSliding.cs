@@ -6,14 +6,10 @@ public class WallSliding : CharacterMoveState
 
 	public override void EnterState()
 	{
-		//if (rb.velocity.y > 0) rb.velocity = new Vector2(rb.velocity.x, 0);
+		c.canAirDash = true;
+		c.canAirJump = true;
 		OrientCharacter();
 		animator.Play("WallSliding");
-	}
-
-	public override void ExitState()
-	{
-
 	}
 
 	public override void FixedUpdateState()
@@ -33,7 +29,7 @@ public class WallSliding : CharacterMoveState
 		if (c.isGrounded)
 		{
 			// Crouching
-			if (c.pi.down)
+			if (c.pi.downPressed)
 			{
 				c.ChangeState(c.crouching);
 				return;
@@ -56,9 +52,8 @@ public class WallSliding : CharacterMoveState
 		}
 
 		// Dash
-		if (c.pi.doDash)
+		if (c.pi.dashPressed)
 		{
-			Flip();
 			c.ChangeState(c.dashing);
 			return;
 		}
@@ -72,7 +67,7 @@ public class WallSliding : CharacterMoveState
 		}
 
 		// Falling
-		if (c.pi.down || !c.isWall)
+		if (c.pi.downPressed || !c.isWall)
 		{
 			c.ChangeState(c.falling);
 			return;

@@ -26,7 +26,7 @@ public class WallJumping : CharacterMoveState
 		c.isGrounded = false;
 		c.isWall = false;
 		animator.Play("Jump");
-		c.canDoubleJump = true;
+		c.canAirJump = true;
 
 		rb.AddForce(c.isFacingRight ? jumpForce : jumpForce * flipLeft, ForceMode2D.Impulse);
 

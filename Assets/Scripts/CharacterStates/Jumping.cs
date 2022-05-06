@@ -20,7 +20,7 @@ public class Jumping : CharacterMoveState
 		//print(c.secondJumpMultiplier);
 		if (c.isGrounded && canCheckGround)
 		{ // Ground jump
-			c.canDoubleJump = true;
+			c.canAirJump = true;
 			Jump(1f);
 		}
 		else
@@ -37,20 +37,14 @@ public class Jumping : CharacterMoveState
 		canCheckGround = true;
 	}
 
-	public override void ExitState()
-	{
-
-	}
-
 	public override void FixedUpdateState()
 	{
-		//Debug.Break();
 		if (!jumpCanceled)
 		{
 			// Calculate float force
 			jumpTime += Time.fixedDeltaTime;
 			floatForce = Mathf.Max(maxJumpForce * (1 - (jumpTime / airTime)), 0);
-			rb.AddForce(new Vector2(0f, floatForce));// * Time.fixedDeltaTime));
+			rb.AddForce(new Vector2(0f, floatForce));
 		}
 		ApplyLateralMovement(c.airSpeed);
 	}
@@ -80,7 +74,7 @@ public class Jumping : CharacterMoveState
 
 	private void AirJump()
 	{
-		c.canDoubleJump = false;
+		c.canAirJump = false;
 		rb.velocity = new Vector2(rb.velocity.x, 0);
 		Jump(c.secondJumpMultiplier);
 	}

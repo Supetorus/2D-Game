@@ -7,11 +7,6 @@ public class Falling : CharacterMoveState
 		animator.Play("Falling");
 	}
 
-	public override void ExitState()
-	{
-
-	}
-
 	public override void FixedUpdateState()
 	{
 		ApplyLateralMovement(c.airSpeed);

@@ -11,8 +11,6 @@ public class CharacterController2D : MonoBehaviour
 	public bool airControlAllowed = false;
 	[SerializeField, Tooltip("How much to smooth out the movement"), Range(0, .3f)]
 	public float movementSmoothing = .05f;
-	[SerializeField, Tooltip("A mask determining what is ground to the character")]
-	public LayerMask groundLayers;
 	[SerializeField, Tooltip("Positions to check if the player is grounded")]
 	public List<Transform> groundChecks = new List<Transform>();
 	[SerializeField, Tooltip("Positions to check if the player is against the wall")]
@@ -20,6 +18,8 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField, Tooltip("Positions to check if the player can stand while crouching")]
 	public List<Transform> ceilingChecks = new List<Transform>();
 
+	[SerializeField, Tooltip("A mask determining what is ground to the character")]
+	public LayerMask groundLayers;
 	[SerializeField, Tooltip("A mask determining what is ceiling to the character while crouching")]
 	public LayerMask ceilingLayers;
 	[SerializeField, Tooltip("A mask determining what is wall to the character")]
@@ -64,7 +64,8 @@ public class CharacterController2D : MonoBehaviour
 	[HideInInspector] public bool isDashing = false; //If player is dashing
 	[HideInInspector] public bool isWallSliding = false; //If player is sliding in a wall
 	[HideInInspector] public bool prevWallSliding = false; //If player is sliding on a wall in the previous frame
-	[HideInInspector] public bool canDoubleJump = true; //If the player can jump again while in air.
+	[HideInInspector] public bool canAirJump = true; //If the player can jump while in the air.
+	[HideInInspector] public bool canAirDash = true; //If the player can dash while in the air.
 	[SerializeField] public float secondJumpMultiplier = 0.8f; // The amount of impulse force an air jump will have compared to regular jump
 															   //[HideInInspector] public float sjm = 0.9f;
 
@@ -93,8 +94,9 @@ public class CharacterController2D : MonoBehaviour
 		public float lateralMovement;
 		public bool jumpPressed;
 		public bool jumpHeld;
-		public bool doDash;
-		public bool down;
+		public bool dashPressed;
+		public bool downPressed;
+		public bool downHeld;
 		public bool doMelee;
 
 		public bool ignoreLateralInput; // If lateral input should be ignored, usually temporarily
@@ -106,8 +108,10 @@ public class CharacterController2D : MonoBehaviour
 			else lateralMovement = 0;
 			jumpPressed = Input.GetKeyDown(KeyCode.Z);
 			jumpHeld = Input.GetKey(KeyCode.Z);
-			doDash = Input.GetKey(KeyCode.C);
-			down = Input.GetKey(KeyCode.DownArrow);
+			dashPressed = Input.GetKeyDown(KeyCode.C);
+			downPressed = Input.GetKeyDown(KeyCode.DownArrow);
+			//if (downPressed) downHeld = true;
+			downHeld = Input.GetKey(KeyCode.DownArrow);
 			doMelee = Input.GetKeyDown(KeyCode.X);
 		}
 	}
@@ -166,7 +170,8 @@ public class CharacterController2D : MonoBehaviour
 
 	private void Update()
 	{
-		debugText.text = "State: " + CurrentMState.ToString();
+		debugText.text = "State: " + CurrentMState.ToString() + 
+			"\nCanAirDash: " + canAirDash;
 
 		// Get player input
 		pi.Update();
@@ -177,7 +182,8 @@ public class CharacterController2D : MonoBehaviour
 		wallPressing = !isGrounded && Mathf.Abs(pi.lateralMovement) > 0.01f && isWall; // Not grounded and pressing toward the wall.
 
 		// Update state
-		CurrentMState.UpdateState();
+		CurrentMState
+			.UpdateState();
 	}
 
 	private void FixedUpdate()
@@ -200,7 +206,7 @@ public class CharacterController2D : MonoBehaviour
 		isWall = false;
 		foreach (Transform t in wallChecks)
 		{
-			hits = Physics2D.RaycastAll(transform.position, t.position - transform.position, (transform.position - t.position).magnitude, groundLayers);
+			hits = Physics2D.RaycastAll(transform.position, t.position - transform.position, (transform.position - t.position).magnitude, wallLayers);
 			foreach (var col in hits)
 			{
 				if (col.transform.gameObject != gameObject) { isWall = true; break; }
@@ -212,7 +218,7 @@ public class CharacterController2D : MonoBehaviour
 		isCrouchBlocked = false;
 		foreach (Transform t in ceilingChecks)
 		{
-			hits = Physics2D.RaycastAll(transform.position, t.position - transform.position, (transform.position - t.position).magnitude, groundLayers);
+			hits = Physics2D.RaycastAll(transform.position, t.position - transform.position, (transform.position - t.position).magnitude, ceilingLayers);
 			foreach (var col in hits)
 			{
 				if (col.transform.gameObject != gameObject) { isCrouchBlocked = true; break; }
@@ -220,6 +226,8 @@ public class CharacterController2D : MonoBehaviour
 		}
 
 		CurrentMState.FixedUpdateState();
+
+		if (isGrounded) canAirDash = true;
 	}
 
 	private void OnDrawGizmos()
